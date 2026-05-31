@@ -913,6 +913,7 @@ function Products({ products, settings, onSave, onDelete, bp }) {
                   </div>
                   <p className="font-semibold text-slate-700 text-sm">{p.name}</p>
                   <p className="text-xs text-slate-400">{p.unit} · {p.stock ?? 0} in stock</p>
+                  {p.description && <p className="text-xs text-slate-400 mt-0.5">Purity: {p.description}</p>}
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-bold text-slate-800 text-sm">{formatCurrency(p.price, settings.currency)}</p>
@@ -929,7 +930,7 @@ function Products({ products, settings, onSave, onDelete, bp }) {
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm min-w-[500px]">
             <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>{["Code","Name","Category","Unit","Stock","Price",""].map((h,i) => (
+              <tr>{["Code","Name","Category","Unit","Stock","Purity Level","Price",""].map((h,i) => (
                 <th key={i} className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
               ))}</tr>
             </thead>
@@ -941,6 +942,7 @@ function Products({ products, settings, onSave, onDelete, bp }) {
                   <td className="px-5 py-3.5"><span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">{p.category}</span></td>
                   <td className="px-5 py-3.5 text-slate-500 text-xs">{p.unit}</td>
                   <td className={`px-5 py-3.5 text-xs font-semibold ${(p.stock ?? 0) <= 3 ? "text-red-500" : "text-slate-600"}`}>{p.stock ?? 0}</td>
+                  <td className="px-5 py-3.5 text-slate-500 text-xs">{p.description || "—"}</td>
                   <td className="px-5 py-3.5 font-bold text-slate-800">{formatCurrency(p.price, settings.currency)}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex gap-1">
@@ -964,7 +966,7 @@ function Products({ products, settings, onSave, onDelete, bp }) {
               <button onClick={() => setEditing(null)}><X size={18} className="text-slate-400" /></button>
             </div>
             <div className="space-y-3">
-              {[["name","Product Name","text"],["code","Product Code","text"],["unit","Unit","text"],["price","Price","number"],["stock","Stock on Hand","number"],["category","Category","text"],["description","Description","text"]].map(([k,ph,t]) => (
+              {[["name","Product Name","text"],["code","Product Code","text"],["unit","Unit","text"],["price","Price","number"],["stock","Stock on Hand","number"],["category","Category","text"],["description","Purity Level","text"]].map(([k,ph,t]) => (
                 <div key={k}>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{ph}</label>
                   <input type={t} value={form[k]} onChange={e => setForm(p => ({ ...p, [k]: t === "number" ? parseFloat(e.target.value) || 0 : e.target.value }))}
