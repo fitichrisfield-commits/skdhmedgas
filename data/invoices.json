@@ -122,5 +122,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1780267200458-1s6al",
+    "invoiceNo": "OXY-2026-00005",
+    "date": "2026-05-31T22:40:00.458Z",
+    "dueDate": "2026-05-31T22:40:00.458Z",
+    "customerName": "",
+    "customerAddress": "",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-E",
+        "unit": "E-Cylinder",
+        "qty": 1,
+        "price": 850
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 850,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
