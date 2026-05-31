@@ -791,10 +791,28 @@ function NewInvoice({ products, customers, invoices, settings, onSave, bp }) {
 
 // ─── Invoices View ────────────────────────────────────────────────────────────
 
-function Invoices({ invoices, settings, onDelete, bp }) {
+function Invoices({ invoices, settings, onDelete, onUpdate, bp }) {
   const isMobile = bp === "mobile";
   const [search, setSearch] = useState("");
   const [preview, setPreview] = useState(null);
+  const [paying, setPaying] = useState(null);
+  const [payInput, setPayInput] = useState(0);
+
+  const openPay = (inv) => {
+    const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
+    const total = sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
+    setPaying({ ...inv, _total: total });
+    setPayInput(inv.amountPaid || 0);
+  };
+
+  const handleUpdatePayment = () => {
+    const total = paying._total;
+    const paid = Math.min(Math.max(parseFloat(payInput) || 0, 0), total);
+    const balance = Math.max(total - paid, 0);
+    const status = paid <= 0 ? "unpaid" : balance > 0 ? "partial" : "paid";
+    onUpdate({ ...paying, amountPaid: paid, balance, status, _total: undefined });
+    setPaying(null);
+  };
 
   const filtered = invoices.filter(inv =>
     inv.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
@@ -828,8 +846,11 @@ function Invoices({ invoices, settings, onDelete, bp }) {
                 </div>
                 <p className="text-sm font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</p>
                 <div className="flex justify-between items-center mt-2">
-                  <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"} · {paymentLabel(inv)}</p>
+                  <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"} · <span className={getPaymentStatus(inv).tone.split(" ")[1]}>{paymentLabel(inv)}</span></p>
                   <div className="flex gap-1">
+                    {inv.status !== "paid" && (
+                      <button onClick={() => openPay(inv)} className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Update Payment"><Check size={14} /></button>
+                    )}
                     <button onClick={() => setPreview(inv)} className="p-1.5 text-slate-400 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-colors"><Eye size={14} /></button>
                     <button onClick={() => onDelete(inv.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={14} /></button>
                   </div>
@@ -863,6 +884,9 @@ function Invoices({ invoices, settings, onDelete, bp }) {
                     <td className="px-5 py-3.5 font-bold text-slate-800">{formatCurrency(total, settings.currency)}</td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-1">
+                        {inv.status !== "paid" && (
+                          <button onClick={() => openPay(inv)} className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Update Payment"><Check size={14} /></button>
+                        )}
                         <button onClick={() => setPreview(inv)} className="p-1.5 text-slate-400 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-colors"><Eye size={14} /></button>
                         <button onClick={() => onDelete(inv.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={14} /></button>
                       </div>
@@ -874,6 +898,34 @@ function Invoices({ invoices, settings, onDelete, bp }) {
           </table>
         </div>
       )}
+
+      {/* Update Payment Modal */}
+      {paying && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:w-[380px] p-6">
+            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden" />
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-bold text-slate-800">Update Payment</h2>
+              <button onClick={() => setPaying(null)}><X size={18} className="text-slate-400" /></button>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-1">
+              <div className="flex justify-between text-xs text-slate-500"><span>Invoice</span><span className="font-semibold text-cyan-600">{paying.invoiceNo}</span></div>
+              <div className="flex justify-between text-xs text-slate-500"><span>Customer</span><span>{paying.customerName || "Walk-in"}</span></div>
+              <div className="flex justify-between text-xs font-bold text-slate-800"><span>Total</span><span>{formatCurrency(paying._total, settings.currency)}</span></div>
+              <div className="flex justify-between text-xs text-slate-500"><span>Previously Paid</span><span>{formatCurrency(paying.amountPaid || 0, settings.currency)}</span></div>
+            </div>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount Paid</label>
+            <input type="number" value={payInput} onChange={e => setPayInput(e.target.value)}
+              className="mt-1 w-full text-sm py-2 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 mb-2" />
+            <button onClick={() => setPayInput(paying._total)} className="text-xs text-cyan-600 hover:underline mb-4 block">Mark as fully paid</button>
+            <div className="flex gap-2">
+              <button onClick={() => setPaying(null)} className="flex-1 py-3 border border-slate-200 rounded-xl text-sm text-slate-600">Cancel</button>
+              <button onClick={handleUpdatePayment} className="flex-1 py-3 bg-emerald-500 rounded-xl text-sm text-white font-semibold">Update</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {preview && <InvoicePreview invoice={preview} settings={settings} onClose={() => setPreview(null)} />}
     </div>
   );
@@ -1326,6 +1378,7 @@ export default function App() {
     }));
   };
   const deleteInvoice = (id) => { if (confirm("Delete this invoice?")) setInvoices(prev => prev.filter(i => i.id !== id)); };
+  const updateInvoice = (inv) => { setInvoices(prev => prev.map(i => i.id === inv.id ? inv : i)); setTimeout(() => handleSync({ silent: true }), 300); };
 
   const sharedProps = { bp };
 
@@ -1333,7 +1386,7 @@ export default function App() {
     switch (view) {
       case "dashboard":   return <Dashboard   invoices={invoices}  products={products}  customers={customers}  settings={settings} {...sharedProps} />;
       case "new-invoice": return <NewInvoice  products={products}  customers={customers} invoices={invoices}  settings={settings}  onSave={saveInvoice}    {...sharedProps} />;
-      case "invoices":    return <Invoices    invoices={invoices}  settings={settings}  onDelete={deleteInvoice}                                           {...sharedProps} />;
+      case "invoices":    return <Invoices    invoices={invoices}  settings={settings}  onDelete={deleteInvoice} onUpdate={updateInvoice}                                    {...sharedProps} />;
       case "products":    return <Products    products={products}  settings={settings}  onSave={saveProduct}   onDelete={deleteProduct}                    {...sharedProps} />;
       case "customers":   return <CustomersView customers={customers} onSave={saveCustomer} onDelete={deleteCustomer}                                      {...sharedProps} />;
       case "settings":    return <SettingsView settings={settings} onSave={setSettings} onCreateRepo={handleCreateRepo} repoStatus={repoStatus}            {...sharedProps} />;
