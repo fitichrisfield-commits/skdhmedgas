@@ -75,6 +75,7 @@ const githubApi = {
   async getFile(owner, repo, path, token, branch = "main") {
     const url = new URL(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`);
     if (branch) url.searchParams.set("ref", branch);
+    url.searchParams.set("t", Date.now());
     const res = await fetch(url, { headers: this.headers(token) });
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`GitHub error: ${res.status}`);
