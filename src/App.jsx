@@ -1267,6 +1267,17 @@ export default function App() {
     handlePull({ silent: true });
   }, [hasGitHubConfig, handlePull]);
 
+  // Auto-refresh from GitHub every 30 seconds
+  useEffect(() => {
+    if (!hasGitHubConfig) return;
+    const interval = setInterval(() => {
+      if (!syncingFromRemoteRef.current) {
+        handlePull({ silent: true });
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [hasGitHubConfig, handlePull]);
+
   useEffect(() => {
     if (!hasGitHubConfig || !autoPullDoneRef.current || !autoSyncReadyRef.current || syncingFromRemoteRef.current || justPulledRef.current) return;
     clearTimeout(syncTimerRef.current);
