@@ -45,7 +45,7 @@
     "code": "CO2-E",
     "unit": "E-Cylinder",
     "price": 950,
-    "stock": 5,
+    "stock": 0,
     "category": "CO2",
     "description": "Medical grade carbon dioxide"
   },
