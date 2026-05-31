@@ -1,32 +1,42 @@
 [
   {
-    "name": "Medical Gas ",
-    "code": "M-G-Big",
-    "unit": "pcs",
+    "id": "p1",
+    "name": "Medical Oxygen",
+    "code": "O2-B",
+    "unit": "B-Cylinder",
     "price": 180,
     "stock": 100,
     "category": "Oxygen",
-    "description": "90% pure",
-    "id": "1780270357414-a3ktv"
+    "description": "Big-size medical oxygen cylinder"
   },
   {
-    "name": "Medical Gas",
-    "code": "M-G-Medium",
-    "unit": "pcs",
-    "price": 150,
+    "id": "p2",
+    "name": "Medical Oxygen",
+    "code": "O2-M",
+    "unit": "M-Cylinder",
+    "price": 160,
     "stock": 100,
     "category": "Oxygen",
-    "description": "90% pure",
-    "id": "1780270759711-88jt7"
+    "description": "M-size medical oxygen cylinder"
   },
   {
-    "name": "Medical Gas",
-    "code": "M-G-Small",
-    "unit": "pcs",
+    "id": "p3",
+    "name": "Medical Oxygen",
+    "code": "O2-S",
+    "unit": "S-Cylinder",
     "price": 120,
     "stock": 100,
     "category": "Oxygen",
-    "description": "90% pure",
-    "id": "1780270841812-pc599"
+    "description": "S-size medical oxygen cylinder"
+  },
+  {
+    "name": "Medical Oxygen",
+    "code": "O2-m",
+    "unit": "pcs",
+    "price": 60,
+    "stock": 100,
+    "category": "Oxygen",
+    "description": "Mini O2 cylinder",
+    "id": "1780271643030-zrwln"
   }
 ]
