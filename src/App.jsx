@@ -58,6 +58,12 @@ const DEFAULT_SETTINGS = {
   vatRate: 0,
 };
 
+const PAYMENT_STATUS = {
+  unpaid: { label: "Unpaid", tone: "bg-red-50 text-red-600" },
+  partial: { label: "Partial", tone: "bg-amber-50 text-amber-600" },
+  paid: { label: "Paid", tone: "bg-emerald-50 text-emerald-600" },
+};
+
 // ─── GitHub API ───────────────────────────────────────────────────────────────
 
 const githubApi = {
@@ -126,6 +132,11 @@ const backupSettings = (settings) => {
   return safeSettings;
 };
 
+const mergeSettings = (base) => {
+  const connection = ls.get("pos_github_connection", {});
+  return { ...DEFAULT_SETTINGS, ...base, ...connection };
+};
+
 // ─── Utilities ────────────────────────────────────────────────────────────────
 
 const genId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -144,6 +155,18 @@ const formatDate = (iso) => new Date(iso).toLocaleDateString("en-US", { year: "n
 const ls = {
   get: (key, def) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } },
   set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} },
+};
+
+const getPaymentStatus = (invoice) => PAYMENT_STATUS[invoice.status] || PAYMENT_STATUS[invoice.status === "part-paid" ? "partial" : "paid"];
+const paymentLabel = (invoice) => getPaymentStatus(invoice).label;
+const saveSettings = (nextSettings) => {
+  ls.set("pos_settings", nextSettings);
+  ls.set("pos_github_connection", {
+    githubToken: nextSettings.githubToken || "",
+    githubOwner: nextSettings.githubOwner || "",
+    githubRepo: nextSettings.githubRepo || "",
+    githubBranch: nextSettings.githubBranch || "main",
+  });
 };
 
 // ─── Invoice Preview ──────────────────────────────────────────────────────────
@@ -192,7 +215,7 @@ function InvoicePreview({ invoice, settings, onClose }) {
             <p className="font-semibold text-slate-700">{invoice.customerName || "Walk-in Customer"}</p>
             {invoice.customerAddress && <p className="text-xs text-slate-500">{invoice.customerAddress}</p>}
             {invoice.customerPhone && <p className="text-xs text-slate-500">{invoice.customerPhone}</p>}
-            <p className="text-xs text-slate-500 mt-2">Payment: {invoice.paymentMethod || "Cash"} · {invoice.status || "paid"}</p>
+            <p className="text-xs text-slate-500 mt-2">Payment: {invoice.paymentMethod || "Cash"} · {paymentLabel(invoice)}</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm mb-5 min-w-[400px]">
@@ -523,8 +546,9 @@ function NewInvoice({ products, customers, invoices, settings, onSave, bp }) {
   const subtotal = cart.reduce((s, i) => s + i.qty * i.price, 0);
   const vatAmt = subtotal * (settings.vatRate / 100);
   const total = subtotal + vatAmt - discount;
-  const effectiveAmountPaid = amountPaid > 0 || paymentMethod === "NHIS/Account" ? amountPaid : total;
+  const effectiveAmountPaid = Math.min(Math.max(amountPaid, 0), total);
   const balance = Math.max(total - effectiveAmountPaid, 0);
+  const paymentStatus = effectiveAmountPaid <= 0 ? "unpaid" : balance > 0 ? "partial" : "paid";
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const customer = customerMode === "select" ? selectedCustomer : manualCustomer;
 
@@ -544,7 +568,7 @@ function NewInvoice({ products, customers, invoices, settings, onSave, bp }) {
       balance,
       paymentMethod,
       notes,
-      status: balance > 0 ? "part-paid" : "paid",
+      status: paymentStatus,
     };
     onSave(invoice);
     setSaved(true);
@@ -626,6 +650,16 @@ function NewInvoice({ products, customers, invoices, settings, onSave, bp }) {
           <input type="number" min={0} value={amountPaid} onChange={e => setAmountPaid(parseFloat(e.target.value) || 0)}
             placeholder="Amount paid" className="text-xs py-1.5 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none" />
         </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button type="button" onClick={() => setAmountPaid(0)}
+            className={`py-2 rounded-xl text-xs font-semibold transition-colors ${paymentStatus === "unpaid" ? "bg-red-500 text-white" : "bg-red-50 text-red-600 hover:bg-red-100"}`}>
+            Mark Unpaid
+          </button>
+          <button type="button" onClick={() => setAmountPaid(total)}
+            className={`py-2 rounded-xl text-xs font-semibold transition-colors ${paymentStatus === "paid" ? "bg-emerald-500 text-white" : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"}`}>
+            Mark Paid
+          </button>
+        </div>
         <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notes (optional)"
           rows={2} className="w-full text-xs py-1.5 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none resize-none" />
         <div className="bg-slate-50 rounded-xl p-3 space-y-1">
@@ -633,6 +667,7 @@ function NewInvoice({ products, customers, invoices, settings, onSave, bp }) {
           {settings.vatRate > 0 && <div className="flex justify-between text-xs text-slate-500"><span>VAT {settings.vatRate}%</span><span>{formatCurrency(vatAmt, settings.currency)}</span></div>}
           {discount > 0 && <div className="flex justify-between text-xs text-emerald-600"><span>Discount</span><span>-{formatCurrency(discount, settings.currency)}</span></div>}
           <div className="flex justify-between text-sm font-bold text-slate-800 border-t border-slate-200 pt-1.5"><span>TOTAL</span><span>{formatCurrency(total, settings.currency)}</span></div>
+          <div className="flex justify-between text-xs font-semibold"><span>Status</span><span className={PAYMENT_STATUS[paymentStatus].tone.split(" ")[1]}>{PAYMENT_STATUS[paymentStatus].label}</span></div>
           <div className="flex justify-between text-xs text-slate-500"><span>Paid</span><span>{formatCurrency(effectiveAmountPaid, settings.currency)}</span></div>
           {balance > 0 && <div className="flex justify-between text-xs font-semibold text-amber-600"><span>Balance</span><span>{formatCurrency(balance, settings.currency)}</span></div>}
         </div>
@@ -792,7 +827,7 @@ function Invoices({ invoices, settings, onDelete, bp }) {
                 </div>
                 <p className="text-sm font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</p>
                 <div className="flex justify-between items-center mt-2">
-                  <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"} · {inv.status || "paid"}</p>
+                  <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"} · {paymentLabel(inv)}</p>
                   <div className="flex gap-1">
                     <button onClick={() => setPreview(inv)} className="p-1.5 text-slate-400 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-colors"><Eye size={14} /></button>
                     <button onClick={() => onDelete(inv.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={14} /></button>
@@ -823,7 +858,7 @@ function Invoices({ invoices, settings, onDelete, bp }) {
                     <td className="px-5 py-3.5 text-slate-500 text-xs">{formatDate(inv.date)}</td>
                     <td className="px-5 py-3.5 font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</td>
                     <td className="px-5 py-3.5 text-slate-500 text-xs">{inv.paymentMethod || "Cash"}</td>
-                    <td className="px-5 py-3.5"><span className={`text-xs px-2 py-0.5 rounded-lg ${inv.status === "part-paid" ? "bg-amber-50 text-amber-600" : "bg-emerald-50 text-emerald-600"}`}>{inv.status || "paid"}</span></td>
+                    <td className="px-5 py-3.5"><span className={`text-xs px-2 py-0.5 rounded-lg ${getPaymentStatus(inv).tone}`}>{paymentLabel(inv)}</span></td>
                     <td className="px-5 py-3.5 font-bold text-slate-800">{formatCurrency(total, settings.currency)}</td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-1">
@@ -1035,7 +1070,19 @@ function SettingsView({ settings, onSave, onCreateRepo, repoStatus, bp }) {
   const [saved, setSaved] = useState(false);
   const repoStatusType = typeof repoStatus === "string" ? repoStatus : repoStatus?.type;
 
-  const handleSave = () => { onSave(form); setSaved(true); setTimeout(() => setSaved(false), 1500); };
+  const handleSave = () => {
+    const nextForm = {
+      ...form,
+      githubToken: (form.githubToken || "").trim(),
+      githubOwner: (form.githubOwner || "").trim(),
+      githubRepo: (form.githubRepo || "").trim(),
+      githubBranch: (form.githubBranch || "main").trim(),
+    };
+    onSave(nextForm);
+    setForm(nextForm);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+  };
 
   return (
     <div className={`p-4 ${isMobile ? "pb-28" : "p-6"} max-w-2xl`}>
@@ -1137,7 +1184,7 @@ export default function App() {
   const [products,  setProducts]  = useState(() => ls.get("pos_products",  DEFAULT_PRODUCTS));
   const [invoices,  setInvoices]  = useState(() => ls.get("pos_invoices",  []));
   const [customers, setCustomers] = useState(() => ls.get("pos_customers", []));
-  const [settings,  setSettings]  = useState(() => ls.get("pos_settings",  DEFAULT_SETTINGS));
+  const [settings,  setSettings]  = useState(() => mergeSettings(ls.get("pos_settings",  DEFAULT_SETTINGS)));
   const [syncStatus,  setSyncStatus]  = useState("idle");
   const [repoStatus,  setRepoStatus]  = useState("idle");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isTablet);
@@ -1149,7 +1196,7 @@ export default function App() {
   useEffect(() => { ls.set("pos_products",  products);  }, [products]);
   useEffect(() => { ls.set("pos_invoices",  invoices);  }, [invoices]);
   useEffect(() => { ls.set("pos_customers", customers); }, [customers]);
-  useEffect(() => { ls.set("pos_settings",  settings);  }, [settings]);
+  useEffect(() => { saveSettings(settings); }, [settings]);
 
   const handleSync = useCallback(async () => {
     if (!settings.githubToken || !settings.githubOwner || !settings.githubRepo) {
@@ -1189,7 +1236,7 @@ export default function App() {
       if (p)    setProducts(p.data);
       if (inv)  setInvoices(inv.data);
       if (cust) setCustomers(cust.data);
-      if (cfg)  setSettings(s => ({ ...s, ...cfg.data, githubToken: settings.githubToken }));
+      if (cfg)  setSettings(s => mergeSettings({ ...s, ...cfg.data, githubToken: settings.githubToken }));
       showToast("Data pulled from GitHub!");
     } catch (err) { showToast("Pull failed: " + err.message, "error"); }
   }, [settings]);
@@ -1206,7 +1253,9 @@ export default function App() {
     try {
       const result = await githubApi.createRepo(owner, repo, token);
       setRepoStatus({ type: "created", message: "" });
-      setSettings(s => ({ ...s, githubToken: token, githubOwner: owner, githubRepo: repo, githubBranch: cfg.githubBranch || "main" }));
+      const nextSettings = { ...settings, githubToken: token, githubOwner: owner, githubRepo: repo, githubBranch: cfg.githubBranch || "main" };
+      saveSettings(nextSettings);
+      setSettings(nextSettings);
       showToast(result.already_exists ? "Repo already exists — ready to sync!" : "Repository created successfully!");
     } catch (err) {
       setRepoStatus({ type: "error", message: err.message || "Verification failed — check your token and username" });
