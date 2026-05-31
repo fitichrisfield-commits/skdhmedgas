@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   LayoutDashboard, ShoppingCart, FileText, Package,
   Users, Settings, RefreshCw, Plus, Trash2, Edit2,
@@ -1189,8 +1189,13 @@ export default function App() {
   const [repoStatus,  setRepoStatus]  = useState("idle");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isTablet);
   const [toast, setToast] = useState(null);
+  const autoPullDoneRef = useRef(false);
+  const autoSyncReadyRef = useRef(false);
+  const syncingFromRemoteRef = useRef(false);
+  const syncTimerRef = useRef(null);
 
   const showToast = (msg, type = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+  const hasGitHubConfig = Boolean(settings.githubToken && settings.githubOwner && settings.githubRepo);
 
   useEffect(() => { setSidebarCollapsed(isTablet); }, [isTablet]);
   useEffect(() => { ls.set("pos_products",  products);  }, [products]);
@@ -1198,7 +1203,7 @@ export default function App() {
   useEffect(() => { ls.set("pos_customers", customers); }, [customers]);
   useEffect(() => { saveSettings(settings); }, [settings]);
 
-  const handleSync = useCallback(async () => {
+  const handleSync = useCallback(async ({ silent = false } = {}) => {
     if (!settings.githubToken || !settings.githubOwner || !settings.githubRepo) {
       showToast("Configure GitHub settings first", "error"); setView("settings"); return;
     }
@@ -1215,17 +1220,20 @@ export default function App() {
         const existing = await githubApi.getFile(settings.githubOwner, settings.githubRepo, path, settings.githubToken, branch);
         await githubApi.putFile(settings.githubOwner, settings.githubRepo, path, data, settings.githubToken, branch, existing?.sha);
       }
-      setSyncStatus("success"); showToast("Synced to GitHub!"); setTimeout(() => setSyncStatus("idle"), 3000);
+      setSyncStatus("success");
+      if (!silent) showToast("Synced to GitHub!");
+      setTimeout(() => setSyncStatus("idle"), 3000);
     } catch (err) {
       setSyncStatus("error"); showToast(err.message || "Sync failed", "error"); setTimeout(() => setSyncStatus("idle"), 4000);
     }
   }, [settings, products, invoices, customers]);
 
-  const handlePull = useCallback(async () => {
+  const handlePull = useCallback(async ({ silent = false } = {}) => {
     if (!settings.githubToken || !settings.githubOwner || !settings.githubRepo) {
       showToast("Configure GitHub settings first", "error"); setView("settings"); return;
     }
     try {
+      syncingFromRemoteRef.current = true;
       const branch = settings.githubBranch || "main";
       const [p, inv, cust, cfg] = await Promise.all([
         githubApi.getFile(settings.githubOwner, settings.githubRepo, "data/products.json",  settings.githubToken, branch),
@@ -1237,9 +1245,27 @@ export default function App() {
       if (inv)  setInvoices(inv.data);
       if (cust) setCustomers(cust.data);
       if (cfg)  setSettings(s => mergeSettings({ ...s, ...cfg.data, githubToken: settings.githubToken }));
-      showToast("Data pulled from GitHub!");
-    } catch (err) { showToast("Pull failed: " + err.message, "error"); }
+      if (!silent) showToast("Data pulled from GitHub!");
+      setTimeout(() => { syncingFromRemoteRef.current = false; autoSyncReadyRef.current = true; }, 500);
+    } catch (err) {
+      syncingFromRemoteRef.current = false;
+      autoSyncReadyRef.current = true;
+      showToast("Pull failed: " + err.message, "error");
+    }
   }, [settings]);
+
+  useEffect(() => {
+    if (autoPullDoneRef.current || !hasGitHubConfig) return;
+    autoPullDoneRef.current = true;
+    handlePull({ silent: true });
+  }, [hasGitHubConfig, handlePull]);
+
+  useEffect(() => {
+    if (!hasGitHubConfig || !autoPullDoneRef.current || !autoSyncReadyRef.current || syncingFromRemoteRef.current) return;
+    clearTimeout(syncTimerRef.current);
+    syncTimerRef.current = setTimeout(() => handleSync({ silent: true }), 1200);
+    return () => clearTimeout(syncTimerRef.current);
+  }, [hasGitHubConfig, products, invoices, customers, settings, handleSync]);
 
   const handleCreateRepo = async (cfg) => {
     const token = (cfg.githubToken || "").trim();
