@@ -23,5 +23,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "partial"
+  },
+  {
+    "id": "1780265323768-huy91",
+    "invoiceNo": "OXY-2026-00002",
+    "date": "2026-05-31T22:08:43.768Z",
+    "dueDate": "2026-05-31T22:08:43.768Z",
+    "customerName": "Khalita Family Hospital",
+    "customerAddress": "Effiduase",
+    "customerPhone": "0207627892",
+    "items": [
+      {
+        "id": "p5",
+        "name": "Carbon Dioxide",
+        "code": "CO2-E",
+        "unit": "E-Cylinder",
+        "qty": 5,
+        "price": 950
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 4750,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
