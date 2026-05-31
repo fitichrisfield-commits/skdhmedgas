@@ -23,5 +23,54 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "partial"
+  },
+  {
+    "id": "1780265860312-tgp36",
+    "invoiceNo": "OXY-2026-00002",
+    "date": "2026-05-31T22:17:40.312Z",
+    "dueDate": "2026-05-31T22:17:40.312Z",
+    "customerName": "",
+    "customerAddress": "",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p2",
+        "name": "Medical Oxygen",
+        "code": "O2-H",
+        "unit": "H-Cylinder",
+        "qty": 2,
+        "price": 2400
+      },
+      {
+        "id": "p3",
+        "name": "Medical Oxygen",
+        "code": "O2-D",
+        "unit": "D-Cylinder",
+        "qty": 5,
+        "price": 450
+      },
+      {
+        "id": "p6",
+        "name": "Medical Air",
+        "code": "AIR-H",
+        "unit": "H-Cylinder",
+        "qty": 2,
+        "price": 1800
+      },
+      {
+        "id": "p9",
+        "name": "Oxygen Regulator",
+        "code": "REG-O2",
+        "unit": "pcs",
+        "qty": 2,
+        "price": 2500
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 15650,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
