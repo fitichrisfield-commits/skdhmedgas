@@ -1246,8 +1246,26 @@ export default function App() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
         @media print {
-          body > * { display: none !important; }
-          #invoice-print { display: block !important; }
+          html, body {
+            background: #fff !important;
+            margin: 0 !important;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          #invoice-print,
+          #invoice-print * {
+            visibility: visible !important;
+          }
+          #invoice-print {
+            background: #fff !important;
+            display: block !important;
+            left: 0 !important;
+            padding: 24px !important;
+            position: absolute !important;
+            top: 0 !important;
+            width: 100% !important;
+          }
           .print\\:hidden { display: none !important; }
         }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
