@@ -1,0 +1,13 @@
+{
+  "companyName": "Sekyere Kumawu District Hospital",
+  "companyAddress": "Kumawu, Ashanti Region, Ghana",
+  "companyPhone": "+233 00 000 0000",
+  "companyEmail": "info@kumawuhospital.gov.gh",
+  "tinNumber": "",
+  "currency": "GHS",
+  "githubOwner": "fitichrisfield-commits",
+  "githubRepo": "skdhmedgas",
+  "githubBranch": "main",
+  "invoicePrefix": "OXY",
+  "vatRate": 0
+}
