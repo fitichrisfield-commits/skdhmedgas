@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "id": "1780262731751-p6qqo",
+    "invoiceNo": "OXY-2026-00001",
+    "date": "2026-05-31T21:25:31.751Z",
+    "dueDate": "2026-05-31T21:25:31.751Z",
+    "customerName": "Khalita Family Hospital",
+    "customerAddress": "Effiduase",
+    "customerPhone": "0207627892",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-E",
+        "unit": "E-Cylinder",
+        "qty": 3,
+        "price": 850
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 1000,
+    "balance": 1550,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "partial"
+  }
+]
