@@ -72,30 +72,5 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
-  },
-  {
-    "id": "1780266056298-5i5v3",
-    "invoiceNo": "OXY-2026-00003",
-    "date": "2026-05-31T22:20:56.299Z",
-    "dueDate": "2026-05-31T22:20:56.299Z",
-    "customerName": "",
-    "customerAddress": "",
-    "customerPhone": "",
-    "items": [
-      {
-        "id": "p4",
-        "name": "Nitrous Oxide",
-        "code": "N2O-E",
-        "unit": "E-Cylinder",
-        "qty": 1,
-        "price": 1200
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 1200,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
   }
 ]
