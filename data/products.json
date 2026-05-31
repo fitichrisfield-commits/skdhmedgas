@@ -5,7 +5,7 @@
     "code": "O2-E",
     "unit": "E-Cylinder",
     "price": 850,
-    "stock": 0,
+    "stock": 100,
     "category": "Oxygen",
     "description": "E-size medical oxygen cylinder"
   },
@@ -35,7 +35,7 @@
     "code": "N2O-E",
     "unit": "E-Cylinder",
     "price": 1200,
-    "stock": 3,
+    "stock": 4,
     "category": "Nitrous Oxide",
     "description": "Medical grade nitrous oxide"
   },
@@ -55,7 +55,7 @@
     "code": "AIR-H",
     "unit": "H-Cylinder",
     "price": 1800,
-    "stock": 2,
+    "stock": 200,
     "category": "Medical Air",
     "description": "Compressed medical air"
   },
@@ -65,7 +65,7 @@
     "code": "N2-H",
     "unit": "H-Cylinder",
     "price": 1600,
-    "stock": 3,
+    "stock": 200,
     "category": "Nitrogen",
     "description": "Medical grade nitrogen"
   },
