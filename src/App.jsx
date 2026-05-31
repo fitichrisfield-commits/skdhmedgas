@@ -222,7 +222,7 @@ function InvoicePreview({ invoice, settings, onClose }) {
             <table className="w-full text-sm mb-5 min-w-[400px]">
               <thead>
                 <tr className="border-b-2 border-slate-200">
-                  {["#","Description","Unit","Qty","Unit Price","Amount"].map(h => (
+                  {["#","Item","Unit","Qty","Unit Price","Amount"].map(h => (
                     <th key={h} className="text-left py-2 text-xs text-slate-500 font-semibold uppercase tracking-wider pr-2">{h}</th>
                   ))}
                 </tr>
@@ -965,7 +965,7 @@ function Products({ products, settings, onSave, onDelete, bp }) {
                   </div>
                   <p className="font-semibold text-slate-700 text-sm">{p.name}</p>
                   <p className="text-xs text-slate-400">{p.unit} · {p.stock ?? 0} in stock</p>
-                  {p.description && <p className="text-xs text-slate-400 mt-0.5">Purity: {p.description}</p>}
+                  {p.description && <p className="text-xs text-slate-400 mt-0.5">Purity: {p.description}%</p>}
                 </div>
                 <div className="text-right shrink-0">
                   <p className="font-bold text-slate-800 text-sm">{formatCurrency(p.price, settings.currency)}</p>
@@ -994,7 +994,7 @@ function Products({ products, settings, onSave, onDelete, bp }) {
                   <td className="px-5 py-3.5"><span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg">{p.category}</span></td>
                   <td className="px-5 py-3.5 text-slate-500 text-xs">{p.unit}</td>
                   <td className={`px-5 py-3.5 text-xs font-semibold ${(p.stock ?? 0) <= 3 ? "text-red-500" : "text-slate-600"}`}>{p.stock ?? 0}</td>
-                  <td className="px-5 py-3.5 text-slate-500 text-xs">{p.description || "—"}</td>
+                  <td className="px-5 py-3.5 text-slate-500 text-xs">{p.description ? `${p.description}%` : "—"}</td>
                   <td className="px-5 py-3.5 font-bold text-slate-800">{formatCurrency(p.price, settings.currency)}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex gap-1">
