@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "name": "Medical Gas ",
+    "code": "M-G-Big",
+    "unit": "pcs",
+    "price": 180,
+    "stock": 100,
+    "category": "Oxygen",
+    "description": "90% pure",
+    "id": "1780270357414-a3ktv"
+  },
+  {
+    "name": "Medical Gas",
+    "code": "M-G-Medium",
+    "unit": "pcs",
+    "price": 150,
+    "stock": 100,
+    "category": "Oxygen",
+    "description": "90% pure",
+    "id": "1780270759711-88jt7"
+  },
+  {
+    "name": "Medical Gas",
+    "code": "M-G-Small",
+    "unit": "pcs",
+    "price": 120,
+    "stock": 100,
+    "category": "Oxygen",
+    "description": "90% pure",
+    "id": "1780270841812-pc599"
+  }
+]
