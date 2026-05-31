@@ -1193,6 +1193,7 @@ export default function App() {
   const autoSyncReadyRef = useRef(false);
   const syncingFromRemoteRef = useRef(false);
   const syncTimerRef = useRef(null);
+  const justPulledRef = useRef(false);
 
   const showToast = (msg, type = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
   const hasGitHubConfig = Boolean(settings.githubToken && settings.githubOwner && settings.githubRepo);
@@ -1246,7 +1247,13 @@ export default function App() {
       if (cust) setCustomers(cust.data);
       if (cfg)  setSettings(s => mergeSettings({ ...s, ...cfg.data, githubToken: settings.githubToken }));
       if (!silent) showToast("Data pulled from GitHub!");
-      setTimeout(() => { syncingFromRemoteRef.current = false; autoSyncReadyRef.current = true; }, 500);
+      justPulledRef.current = true;
+      setTimeout(() => {
+        syncingFromRemoteRef.current = false;
+        autoSyncReadyRef.current = true;
+        // Allow auto-sync again after a brief delay so pulled data settles
+        setTimeout(() => { justPulledRef.current = false; }, 2000);
+      }, 500);
     } catch (err) {
       syncingFromRemoteRef.current = false;
       autoSyncReadyRef.current = true;
@@ -1261,7 +1268,7 @@ export default function App() {
   }, [hasGitHubConfig, handlePull]);
 
   useEffect(() => {
-    if (!hasGitHubConfig || !autoPullDoneRef.current || !autoSyncReadyRef.current || syncingFromRemoteRef.current) return;
+    if (!hasGitHubConfig || !autoPullDoneRef.current || !autoSyncReadyRef.current || syncingFromRemoteRef.current || justPulledRef.current) return;
     clearTimeout(syncTimerRef.current);
     syncTimerRef.current = setTimeout(() => handleSync({ silent: true }), 1200);
     return () => clearTimeout(syncTimerRef.current);
