@@ -1301,7 +1301,11 @@ export default function App() {
   const saveCustomer  = (c) => setCustomers(prev  => prev.find(x => x.id === c.id) ? prev.map(x  => x.id  === c.id  ? c : x)  : [...prev, c]);
   const deleteCustomer= (id) => setCustomers(prev => prev.filter(c => c.id !== id));
   const saveInvoice   = (inv) => {
-    setInvoices(prev => [...prev, inv]);
+    setInvoices(prev => {
+      const updated = [...prev, inv];
+      setTimeout(() => handleSync({ silent: true }), 300);
+      return updated;
+    });
     setProducts(prev => prev.map(product => {
       const sold = inv.items.find(item => item.id === product.id);
       return sold ? { ...product, stock: Math.max((product.stock ?? 0) - sold.qty, 0) } : product;
