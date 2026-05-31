@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "id": "1780262253811-3jrcr",
+    "invoiceNo": "OXY-2026-00001",
+    "date": "2026-05-31T21:17:33.811Z",
+    "dueDate": "2026-05-31T21:17:33.811Z",
+    "customerName": "",
+    "customerAddress": "",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-E",
+        "unit": "E-Cylinder",
+        "qty": 4,
+        "price": 850
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 600,
+    "balance": 2800,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "partial"
+  }
+]
