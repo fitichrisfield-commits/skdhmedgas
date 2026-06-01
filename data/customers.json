@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "name": "Kalita Family Hospital",
+    "address": "ASHANTI. SEKYERE EAST DISTRICT EFFIDUASE",
+    "phone": "+233 243833489",
+    "email": "",
+    "notes": "",
+    "id": "1780272536189-6itfj"
+  },
+  {
+    "name": "Effiduase Government Hospital",
+    "address": "Effiduase",
+    "phone": "",
+    "email": "",
+    "notes": "",
+    "id": "1780272973810-6bykf"
+  }
+]
