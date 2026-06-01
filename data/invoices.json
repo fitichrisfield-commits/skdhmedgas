@@ -1,1 +1,102 @@
-[]
+[
+  {
+    "id": "1780272865286-14loj",
+    "invoiceNo": "OXY-2026-00001",
+    "date": "2026-06-01T00:14:25.286Z",
+    "dueDate": "2026-06-01T00:14:25.286Z",
+    "customerName": "",
+    "customerAddress": "",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-B",
+        "unit": "B-Cylinder",
+        "qty": 6,
+        "price": 180
+      }
+    ],
+    "discount": 80,
+    "amountPaid": 1000,
+    "balance": 0,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "paid"
+  },
+  {
+    "id": "1780272917485-0jajd",
+    "invoiceNo": "OXY-2026-00002",
+    "date": "2026-06-01T00:15:17.485Z",
+    "dueDate": "2026-06-01T00:15:17.485Z",
+    "customerName": "",
+    "customerAddress": "",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-B",
+        "unit": "B-Cylinder",
+        "qty": 4,
+        "price": 180
+      }
+    ],
+    "discount": 120,
+    "amountPaid": 0,
+    "balance": 600,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
+  },
+  {
+    "id": "1780272941016-clcct",
+    "invoiceNo": "OXY-2026-00003",
+    "date": "2026-06-01T00:15:41.016Z",
+    "dueDate": "2026-06-01T00:15:41.016Z",
+    "customerName": "Kalita Family Hospital",
+    "customerAddress": "ASHANTI. SEKYERE EAST DISTRICT EFFIDUASE",
+    "customerPhone": "+233 243833489",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-B",
+        "unit": "B-Cylinder",
+        "qty": 4,
+        "price": 180
+      }
+    ],
+    "discount": 120,
+    "amountPaid": 0,
+    "balance": 600,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
+  },
+  {
+    "id": "1780273113188-qh14p",
+    "invoiceNo": "OXY-2026-00004",
+    "date": "2026-06-01T00:18:33.189Z",
+    "dueDate": "2026-06-01T00:18:33.189Z",
+    "customerName": "Effiduase Government Hospital",
+    "customerAddress": "Effiduase",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "1780273025273-yf2yf",
+        "name": "Discounted Oxygen",
+        "code": "O2 MEDIUM",
+        "unit": "pcs",
+        "qty": 28,
+        "price": 150
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 4200,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
+  }
+]
