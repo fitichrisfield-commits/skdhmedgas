@@ -5,7 +5,7 @@
     "code": "O2-B",
     "unit": "B-Cylinder",
     "price": 180,
-    "stock": 100,
+    "stock": 86,
     "category": "Oxygen",
     "description": "Big-size medical oxygen cylinder"
   },
@@ -38,5 +38,15 @@
     "category": "Oxygen",
     "description": "Mini O2 cylinder",
     "id": "1780271643030-zrwln"
+  },
+  {
+    "name": "Discounted Oxygen",
+    "code": "O2 MEDIUM",
+    "unit": "pcs",
+    "price": 150,
+    "stock": 72,
+    "category": "Oxygen",
+    "description": "",
+    "id": "1780273025273-yf2yf"
   }
 ]
