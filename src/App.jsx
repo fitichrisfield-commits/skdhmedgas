@@ -1398,6 +1398,66 @@ export default function App() {
     <div className="flex bg-slate-50 min-h-screen" style={{ fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+
+        :root {
+          --bg-page: #f8fafc; --bg-card: #ffffff; --bg-input: #f8fafc;
+          --bg-sidebar: #0f172a; --bg-hover: #f1f5f9; --border: #e2e8f0;
+          --text-primary: #1e293b; --text-secondary: #64748b; --text-muted: #94a3b8;
+          --topbar-bg: rgba(255,255,255,0.9);
+        }
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --bg-page: #0f172a; --bg-card: #1e293b; --bg-input: #0f172a;
+            --bg-sidebar: #020617; --bg-hover: #293548; --border: #334155;
+            --text-primary: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
+            --topbar-bg: rgba(15,23,42,0.9);
+          }
+        }
+        body { background: var(--bg-page); }
+        .bg-white { background-color: var(--bg-card) !important; }
+        .bg-slate-50 { background-color: var(--bg-page) !important; }
+        .bg-slate-100 { background-color: var(--bg-hover) !important; }
+        .border-slate-100, .border-slate-200 { border-color: var(--border) !important; }
+        .text-slate-800, .text-slate-700 { color: var(--text-primary) !important; }
+        .text-slate-600, .text-slate-500 { color: var(--text-secondary) !important; }
+        .text-slate-400 { color: var(--text-muted) !important; }
+        input, select, textarea {
+          background-color: var(--bg-input) !important;
+          border-color: var(--border) !important;
+          color: var(--text-primary) !important;
+        }
+        input::placeholder, textarea::placeholder { color: var(--text-muted) !important; }
+        .bg-slate-900 { background-color: var(--bg-sidebar) !important; }
+        .border-slate-800 { border-color: #1e293b !important; }
+        .hover\\:bg-slate-50\\/50:hover, .hover\\:bg-slate-100:hover, .hover\\:bg-slate-200:hover { background-color: var(--bg-hover) !important; }
+        @media (prefers-color-scheme: dark) {
+          .bg-slate-800 { background-color: #1e293b !important; }
+          .bg-slate-700 { background-color: #293548 !important; }
+          .hover\\:bg-slate-700:hover { background-color: #334155 !important; }
+          .bg-amber-50 { background-color: #2d2005 !important; }
+          .border-amber-100 { border-color: #78350f !important; }
+          .bg-cyan-50 { background-color: #0a2540 !important; }
+          .border-cyan-200 { border-color: #0e4d7a !important; }
+          .bg-red-50 { background-color: #2d0a0a !important; }
+          .bg-emerald-50 { background-color: #052d1e !important; }
+          .bg-blue-50 { background-color: #0a1f3d !important; }
+          .bg-purple-50 { background-color: #1a0a2d !important; }
+          .text-slate-900 { color: #f1f5f9 !important; }
+          .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+          .shadow-xl, .shadow-2xl { box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important; }
+          .bg-white\\/90 { background-color: rgba(15,23,42,0.9) !important; }
+          .bg-black\\/60 { background-color: rgba(0,0,0,0.75) !important; }
+          .bg-black\\/40 { background-color: rgba(0,0,0,0.6) !important; }
+          select option { background-color: #1e293b; color: #f1f5f9; }
+          thead.bg-slate-50 { background-color: #162032 !important; }
+          .border-slate-50 { border-color: #1e293b !important; }
+          .border-b-2.border-slate-200 { border-color: #334155 !important; }
+          .border-t-2.border-slate-200 { border-color: #334155 !important; }
+          .border-t.border-slate-100 { border-color: #334155 !important; }
+          .border-b.border-slate-100 { border-color: #1e293b !important; }
+          .rounded-t-3xl { background-color: var(--bg-card) !important; }
+        }
+
         @media print {
           html, body {
             background: #fff !important;
