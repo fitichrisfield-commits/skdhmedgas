@@ -68,11 +68,11 @@
       }
     ],
     "discount": 120,
-    "amountPaid": 600,
-    "balance": 0,
+    "amountPaid": 0,
+    "balance": 600,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "paid"
+    "status": "unpaid"
   },
   {
     "id": "1780273113188-qh14p",
