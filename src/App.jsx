@@ -850,9 +850,10 @@ function NewInvoice({ products, customers, invoices, settings, onSave, bp }) {
 
 function Invoices({ invoices, settings, onDelete, onUpdate, bp }) {
   const isMobile = bp === "mobile";
-  const [search, setSearch] = useState("");
-  const [preview, setPreview] = useState(null);
-  const [paying, setPaying] = useState(null);
+  const [search, setSearch]     = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+  const [preview, setPreview]   = useState(null);
+  const [paying, setPaying]     = useState(null);
   const [payInput, setPayInput] = useState(0);
 
   const openPay = (inv) => {
@@ -871,75 +872,190 @@ function Invoices({ invoices, settings, onDelete, onUpdate, bp }) {
     setPaying(null);
   };
 
-  const filtered = invoices.filter(inv =>
-    inv.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
-    (inv.customerName || "").toLowerCase().includes(search.toLowerCase())
-  ).slice().reverse();
+  // counts
+  const allCount     = invoices.length;
+  const paidCount    = invoices.filter(i => i.status === "paid").length;
+  const partialCount = invoices.filter(i => i.status === "partial").length;
+  const unpaidCount  = invoices.filter(i => i.status === "unpaid").length;
 
-  return (
-    <div className={`p-4 ${isMobile ? "pb-24" : "p-6"}`}>
-      <div className="flex justify-between items-center mb-4">
-        {!isMobile && <div><h1 className="text-xl font-bold text-slate-800">Invoice History</h1><p className="text-slate-500 text-sm">{invoices.length} total</p></div>}
-        <div className={`relative ${isMobile ? "w-full" : ""}`}>
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search invoices..."
-            className={`pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 ${isMobile ? "w-full" : "w-56"}`} />
+  // totals
+  const calcTotal = inv => {
+    const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
+    return sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
+  };
+  const unpaidTotal  = invoices.filter(i => i.status === "unpaid").reduce((s, inv) => s + calcTotal(inv), 0);
+  const partialTotal = invoices.filter(i => i.status === "partial").reduce((s, inv) => s + (inv.balance || 0), 0);
+  const paidTotal    = invoices.filter(i => i.status === "paid").reduce((s, inv) => s + calcTotal(inv), 0);
+
+  const TABS = [
+    { id: "all",     label: "All",         count: allCount,     amount: null,         dot: "bg-slate-400",   ring: "border-slate-400",   active: "bg-slate-800 text-white",   inactive: "bg-slate-100 text-slate-600" },
+    { id: "unpaid",  label: "Unpaid",      count: unpaidCount,  amount: unpaidTotal,  dot: "bg-red-400",     ring: "border-red-400",     active: "bg-red-500 text-white",     inactive: "bg-red-50 text-red-500" },
+    { id: "partial", label: "Part Paid",   count: partialCount, amount: partialTotal, dot: "bg-amber-400",   ring: "border-amber-400",   active: "bg-amber-500 text-white",   inactive: "bg-amber-50 text-amber-600" },
+    { id: "paid",    label: "Fully Paid",  count: paidCount,    amount: paidTotal,    dot: "bg-emerald-500", ring: "border-emerald-400", active: "bg-emerald-500 text-white", inactive: "bg-emerald-50 text-emerald-600" },
+  ];
+
+  const filtered = invoices
+    .filter(inv => activeTab === "all" || inv.status === activeTab)
+    .filter(inv =>
+      inv.invoiceNo.toLowerCase().includes(search.toLowerCase()) ||
+      (inv.customerName || "").toLowerCase().includes(search.toLowerCase())
+    )
+    .slice().reverse();
+
+  const cur = settings.currency;
+
+  const renderInvoiceCard = (inv) => {
+    const total = calcTotal(inv);
+    const status = inv.status || "unpaid";
+    const statusConfig = {
+      paid:    { dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-600 border-emerald-100", label: "Fully Paid" },
+      partial: { dot: "bg-amber-400",   badge: "bg-amber-50 text-amber-600 border-amber-100",       label: "Part Paid" },
+      unpaid:  { dot: "bg-red-400",     badge: "bg-red-50 text-red-500 border-red-100",             label: "Unpaid" },
+    };
+    const sc = statusConfig[status] || statusConfig.unpaid;
+    return (
+      <div key={inv.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+        <div className="flex justify-between items-start mb-1.5">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-cyan-600 text-sm">{inv.invoiceNo}</span>
+            <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border ${sc.badge}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />{sc.label}
+            </span>
+          </div>
+          <span className="font-bold text-slate-800 text-sm">{formatCurrency(total, cur)}</span>
+        </div>
+        <p className="text-sm font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</p>
+        <div className="flex justify-between items-center mt-2">
+          <div>
+            <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"}</p>
+            {status === "partial" && <p className="text-xs text-amber-500 font-medium mt-0.5">Balance: {formatCurrency(inv.balance || 0, cur)}</p>}
+            {status === "unpaid"  && <p className="text-xs text-red-400 font-medium mt-0.5">Owing: {formatCurrency(total, cur)}</p>}
+            {status === "paid"    && <p className="text-xs text-emerald-500 font-medium mt-0.5">Collected: {formatCurrency(inv.amountPaid || 0, cur)}</p>}
+          </div>
+          <div className="flex gap-1">
+            {inv.status !== "paid" && (
+              <button onClick={() => openPay(inv)} className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Update Payment"><Check size={14} /></button>
+            )}
+            <button onClick={() => setPreview(inv)} className="p-1.5 text-slate-400 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-colors"><Eye size={14} /></button>
+            <button onClick={() => onDelete(inv.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={14} /></button>
+          </div>
         </div>
       </div>
+    );
+  };
 
-      {/* Mobile: card list */}
+  const activeTabCfg = TABS.find(t => t.id === activeTab);
+
+  return (
+    <div className={`p-4 ${isMobile ? "pb-24" : "p-6"} space-y-4`}>
+
+      {/* Header */}
+      {!isMobile && (
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-xl font-bold text-slate-800">Invoice History</h1>
+            <p className="text-slate-500 text-sm">{allCount} total invoices</p>
+          </div>
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search invoices..."
+              className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 w-56" />
+          </div>
+        </div>
+      )}
+
+      {/* Mobile search */}
+      {isMobile && (
+        <div className="relative">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search invoices..."
+            className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 w-full" />
+        </div>
+      )}
+
+      {/* Summary cards (non-mobile) */}
+      {!isMobile && (
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { label: "Total Unpaid",    amount: unpaidTotal,  count: unpaidCount,  bg: "bg-red-50",     border: "border-red-100",     text: "text-red-500",     badge: "bg-red-100 text-red-600" },
+            { label: "Outstanding Balance (Part Paid)", amount: partialTotal, count: partialCount, bg: "bg-amber-50",   border: "border-amber-100",   text: "text-amber-600",   badge: "bg-amber-100 text-amber-700" },
+            { label: "Total Collected (Fully Paid)", amount: paidTotal,   count: paidCount,   bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-600", badge: "bg-emerald-100 text-emerald-700" },
+          ].map((c, i) => (
+            <div key={i} className={`rounded-2xl p-4 border ${c.bg} ${c.border}`}>
+              <p className="text-xs font-semibold text-slate-500 mb-1">{c.label}</p>
+              <p className={`text-xl font-bold ${c.text}`}>{formatCurrency(c.amount, cur)}</p>
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-lg ${c.badge} mt-1 inline-block`}>{c.count} invoice{c.count !== 1 ? "s" : ""}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        {TABS.map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+            className={`shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${activeTab === tab.id ? tab.active + " shadow-sm" : tab.inactive}`}>
+            <span className={`w-2 h-2 rounded-full ${activeTab === tab.id ? "bg-white/70" : tab.dot}`} />
+            {tab.label}
+            <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${activeTab === tab.id ? "bg-white/20" : "bg-black/5"}`}>{tab.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Active tab amount summary */}
+      {activeTab !== "all" && activeTabCfg?.amount !== null && (
+        <div className={`rounded-xl px-4 py-2.5 flex justify-between items-center text-sm font-semibold
+          ${activeTab === "unpaid"  ? "bg-red-50 text-red-600 border border-red-100" : ""}
+          ${activeTab === "partial" ? "bg-amber-50 text-amber-600 border border-amber-100" : ""}
+          ${activeTab === "paid"    ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : ""}`}>
+          <span>{activeTab === "partial" ? "Total outstanding balance" : activeTab === "unpaid" ? "Total amount owed" : "Total collected"}</span>
+          <span className="font-bold">{formatCurrency(activeTabCfg.amount, cur)}</span>
+        </div>
+      )}
+
+      {/* Invoice list — mobile cards */}
       {isMobile ? (
         <div className="space-y-2.5">
           {filtered.length === 0 ? (
             <div className="text-center py-12 text-slate-400"><FileText size={32} className="mx-auto mb-2 opacity-20" /><p className="text-sm">No invoices found</p></div>
-          ) : filtered.map(inv => {
-            const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
-            const total = sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
-            return (
-              <div key={inv.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="font-bold text-cyan-600 text-sm">{inv.invoiceNo}</span>
-                  <span className="font-bold text-slate-800">{formatCurrency(total, settings.currency)}</span>
-                </div>
-                <p className="text-sm font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</p>
-                <div className="flex justify-between items-center mt-2">
-                  <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"} · <span className={getPaymentStatus(inv).tone.split(" ")[1]}>{paymentLabel(inv)}</span></p>
-                  <div className="flex gap-1">
-                    {inv.status !== "paid" && (
-                      <button onClick={() => openPay(inv)} className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Update Payment"><Check size={14} /></button>
-                    )}
-                    <button onClick={() => setPreview(inv)} className="p-1.5 text-slate-400 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-colors"><Eye size={14} /></button>
-                    <button onClick={() => onDelete(inv.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={14} /></button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          ) : filtered.map(inv => renderInvoiceCard(inv))}
         </div>
       ) : (
-        /* Desktop/Tablet: table */
+        /* Desktop table */
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden overflow-x-auto">
           <table className="w-full text-sm min-w-[500px]">
             <thead className="bg-slate-50 border-b border-slate-100">
-              <tr>{["Invoice No.","Date","Customer","Payment","Status","Total","Actions"].map(h => (
-                <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
+              <tr>{["Invoice No.","Date","Customer","Payment","Status","Total","Paid","Balance","Actions"].map(h => (
+                <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">{h}</th>
               ))}</tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-12 text-slate-400 text-sm">No invoices found</td></tr>
+                <tr><td colSpan={9} className="text-center py-12 text-slate-400 text-sm">No invoices found</td></tr>
               ) : filtered.map(inv => {
-                const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
-                const total = sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
+                const total  = calcTotal(inv);
+                const status = inv.status || "unpaid";
+                const statusConfig = {
+                  paid:    { dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-600 border-emerald-100", label: "Fully Paid" },
+                  partial: { dot: "bg-amber-400",   badge: "bg-amber-50 text-amber-600 border-amber-100",       label: "Part Paid" },
+                  unpaid:  { dot: "bg-red-400",     badge: "bg-red-50 text-red-500 border-red-100",             label: "Unpaid" },
+                };
+                const sc = statusConfig[status] || statusConfig.unpaid;
                 return (
                   <tr key={inv.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                    <td className="px-5 py-3.5"><span className="font-semibold text-cyan-600">{inv.invoiceNo}</span></td>
-                    <td className="px-5 py-3.5 text-slate-500 text-xs">{formatDate(inv.date)}</td>
-                    <td className="px-5 py-3.5 font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</td>
-                    <td className="px-5 py-3.5 text-slate-500 text-xs">{inv.paymentMethod || "Cash"}</td>
-                    <td className="px-5 py-3.5"><span className={`text-xs px-2 py-0.5 rounded-lg ${getPaymentStatus(inv).tone}`}>{paymentLabel(inv)}</span></td>
-                    <td className="px-5 py-3.5 font-bold text-slate-800">{formatCurrency(total, settings.currency)}</td>
-                    <td className="px-5 py-3.5">
+                    <td className="px-4 py-3.5"><span className="font-semibold text-cyan-600">{inv.invoiceNo}</span></td>
+                    <td className="px-4 py-3.5 text-slate-500 text-xs">{formatDate(inv.date)}</td>
+                    <td className="px-4 py-3.5 font-medium text-slate-700">{inv.customerName || <span className="text-slate-400 italic">Walk-in</span>}</td>
+                    <td className="px-4 py-3.5 text-slate-500 text-xs">{inv.paymentMethod || "Cash"}</td>
+                    <td className="px-4 py-3.5">
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-lg border ${sc.badge}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />{sc.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 font-bold text-slate-800">{formatCurrency(total, cur)}</td>
+                    <td className="px-4 py-3.5 text-emerald-600 font-medium text-xs">{formatCurrency(inv.amountPaid || 0, cur)}</td>
+                    <td className={`px-4 py-3.5 font-medium text-xs ${(inv.balance || 0) > 0 ? "text-red-500" : "text-slate-400"}`}>{formatCurrency(inv.balance || 0, cur)}</td>
+                    <td className="px-4 py-3.5">
                       <div className="flex gap-1">
                         {inv.status !== "paid" && (
                           <button onClick={() => openPay(inv)} className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Update Payment"><Check size={14} /></button>
@@ -968,8 +1084,8 @@ function Invoices({ invoices, settings, onDelete, onUpdate, bp }) {
             <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-1">
               <div className="flex justify-between text-xs text-slate-500"><span>Invoice</span><span className="font-semibold text-cyan-600">{paying.invoiceNo}</span></div>
               <div className="flex justify-between text-xs text-slate-500"><span>Customer</span><span>{paying.customerName || "Walk-in"}</span></div>
-              <div className="flex justify-between text-xs font-bold text-slate-800"><span>Total</span><span>{formatCurrency(paying._total, settings.currency)}</span></div>
-              <div className="flex justify-between text-xs text-slate-500"><span>Previously Paid</span><span>{formatCurrency(paying.amountPaid || 0, settings.currency)}</span></div>
+              <div className="flex justify-between text-xs font-bold text-slate-800"><span>Total</span><span>{formatCurrency(paying._total, cur)}</span></div>
+              <div className="flex justify-between text-xs text-slate-500"><span>Previously Paid</span><span>{formatCurrency(paying.amountPaid || 0, cur)}</span></div>
             </div>
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount Paid</label>
             <input type="number" value={payInput} onChange={e => setPayInput(e.target.value)}
