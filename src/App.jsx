@@ -463,21 +463,72 @@ function Dashboard({ invoices, products, customers, settings, bp }) {
         ))}
       </div>
 
+      {/* Payment status summary strip */}
+      {invoices.length > 0 && (() => {
+        const paid    = invoices.filter(i => i.status === "paid").length;
+        const partial = invoices.filter(i => i.status === "partial").length;
+        const unpaid  = invoices.filter(i => i.status === "unpaid").length;
+        const total   = invoices.length;
+        return (
+          <div className="bg-white rounded-2xl px-5 py-4 shadow-sm border border-slate-100">
+            <div className="flex justify-between items-center mb-2.5">
+              <h2 className="font-semibold text-slate-700 text-sm">All-time Payment Status</h2>
+              <span className="text-xs text-slate-400">{total} invoices</span>
+            </div>
+            <div className="flex gap-4 flex-wrap mb-3">
+              {[
+                { label: "Paid",    count: paid,    pct: Math.round(paid/total*100),    dot: "bg-emerald-500", text: "text-emerald-600" },
+                { label: "Partial", count: partial, pct: Math.round(partial/total*100), dot: "bg-amber-500",   text: "text-amber-600" },
+                { label: "Unpaid",  count: unpaid,  pct: Math.round(unpaid/total*100),  dot: "bg-red-400",     text: "text-red-500" },
+              ].map((s, i) => (
+                <div key={i} className="flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${s.dot}`} />
+                  <span className="text-xs text-slate-500">{s.label}</span>
+                  <span className={`text-xs font-bold ${s.text}`}>{s.count}</span>
+                  <span className="text-xs text-slate-300">({s.pct}%)</span>
+                </div>
+              ))}
+            </div>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden flex">
+              <div className="bg-emerald-400 h-full transition-all" style={{ width: `${paid/total*100}%` }} />
+              <div className="bg-amber-400 h-full transition-all" style={{ width: `${partial/total*100}%` }} />
+              <div className="bg-red-400 h-full transition-all" style={{ width: `${unpaid/total*100}%` }} />
+            </div>
+          </div>
+        );
+      })()}
+
       <div className={`grid gap-4 ${isMobile ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"}`}>
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
           <h2 className="font-semibold text-slate-700 mb-3 text-sm">Recent Invoices</h2>
           {invoices.length === 0 ? (
             <p className="text-slate-400 text-sm text-center py-6">No invoices yet</p>
-          ) : invoices.slice(-5).reverse().map(inv => {
+          ) : invoices.slice(-8).reverse().map(inv => {
             const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
             const total = sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
+            const status = inv.status || "unpaid";
+            const statusStyles = {
+              paid:    { dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-600 border border-emerald-100", label: "Paid" },
+              partial: { dot: "bg-amber-500",   badge: "bg-amber-50 text-amber-600 border border-amber-100",     label: "Partial" },
+              unpaid:  { dot: "bg-red-400",     badge: "bg-red-50 text-red-500 border border-red-100",           label: "Unpaid" },
+            };
+            const s = statusStyles[status] || statusStyles.unpaid;
             return (
-              <div key={inv.id} className="flex justify-between items-center py-2 border-b border-slate-50 last:border-0">
-                <div>
-                  <p className="text-sm font-medium text-slate-700">{inv.invoiceNo}</p>
-                  <p className="text-xs text-slate-400">{inv.customerName || "Walk-in"} · {formatDate(inv.date)}</p>
+              <div key={inv.id} className="flex justify-between items-center py-2.5 border-b border-slate-50 last:border-0 gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-slate-700 truncate">{inv.invoiceNo}</p>
+                    <span className={`shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${s.badge}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+                      {s.label}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5 truncate">{inv.customerName || "Walk-in"} · {formatDate(inv.date)}</p>
+                  {status === "partial" && (
+                    <p className="text-[10px] text-amber-500 mt-0.5">Bal: {formatCurrency(inv.balance || 0, settings.currency)}</p>
+                  )}
                 </div>
-                <span className="text-sm font-semibold text-slate-800">{formatCurrency(total, settings.currency)}</span>
+                <span className="text-sm font-bold text-slate-800 shrink-0">{formatCurrency(total, settings.currency)}</span>
               </div>
             );
           })}
