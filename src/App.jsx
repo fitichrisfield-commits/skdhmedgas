@@ -64,6 +64,9 @@ const PAYMENT_STATUS = {
   paid: { label: "Paid", tone: "bg-emerald-50 text-emerald-600" },
 };
 
+const DEFAULT_MANAGER_PIN = "1234";
+const MANAGER_PIN_KEY = "pos_manager_pin";
+
 // ─── GitHub API ───────────────────────────────────────────────────────────────
 
 const githubApi = {
@@ -368,7 +371,7 @@ function BottomNav({ view, setView }) {
 
 // ─── Mobile Header ────────────────────────────────────────────────────────────
 
-function MobileHeader({ view, settings, onSync, syncStatus, onPull }) {
+function MobileHeader({ view, settings, onSync, syncStatus, onPull, onManagerClick }) {
   const title = NAV.find(n => n.id === view)?.label || "";
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-100 px-4 py-3 flex justify-between items-center">
@@ -381,7 +384,10 @@ function MobileHeader({ view, settings, onSync, syncStatus, onPull }) {
           <p className="text-[10px] text-slate-400 mt-0.5 leading-none">{settings.companyName}</p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
+        <button onClick={onManagerClick} className="p-2 text-violet-500 hover:text-violet-700 rounded-xl hover:bg-violet-50 transition-colors" title="Manager View">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </button>
         <button onClick={onPull} className="p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors">
           <RefreshCw size={16} />
         </button>
@@ -1228,6 +1234,452 @@ function SettingsView({ settings, onSave, onCreateRepo, repoStatus, bp }) {
   );
 }
 
+// ─── PIN Modal ────────────────────────────────────────────────────────────────
+
+function PinModal({ onSuccess, onCancel, title = "Enter Manager PIN" }) {
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  const storedPin = ls.get(MANAGER_PIN_KEY, DEFAULT_MANAGER_PIN);
+
+  const handleDigit = (d) => {
+    if (pin.length >= 4) return;
+    const next = pin + d;
+    setPin(next);
+    setError(false);
+    if (next.length === 4) {
+      if (next === storedPin) {
+        setTimeout(() => onSuccess(), 200);
+      } else {
+        setShake(true);
+        setError(true);
+        setTimeout(() => { setPin(""); setShake(false); }, 700);
+      }
+    }
+  };
+
+  const handleDel = () => { setPin(p => p.slice(0, -1)); setError(false); };
+
+  return (
+    <div className="fixed inset-0 z-[70] bg-black/60 flex items-center justify-center px-4">
+      <div className={`bg-white rounded-3xl shadow-2xl w-full max-w-xs p-7 flex flex-col items-center ${shake ? "animate-[wiggle_0.4s_ease-in-out]" : ""}`}
+        style={shake ? { animation: "wiggle 0.4s ease-in-out" } : {}}>
+        <style>{`@keyframes wiggle { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }`}</style>
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4 shadow-lg">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <h2 className="font-bold text-slate-800 text-base mb-1">{title}</h2>
+        <p className="text-xs text-slate-400 mb-5">Manager access required</p>
+
+        {/* PIN dots */}
+        <div className="flex gap-3 mb-6">
+          {[0,1,2,3].map(i => (
+            <div key={i} className={`w-4 h-4 rounded-full border-2 transition-all ${
+              pin.length > i
+                ? error ? "bg-red-500 border-red-500" : "bg-violet-500 border-violet-500"
+                : "border-slate-300 bg-transparent"
+            }`} />
+          ))}
+        </div>
+
+        {/* Numpad */}
+        <div className="grid grid-cols-3 gap-2.5 w-full mb-4">
+          {[1,2,3,4,5,6,7,8,9].map(d => (
+            <button key={d} onClick={() => handleDigit(String(d))}
+              className="h-13 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-semibold text-lg transition-all">
+              {d}
+            </button>
+          ))}
+          <div />
+          <button onClick={() => handleDigit("0")}
+            className="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-800 font-semibold text-lg transition-all">0</button>
+          <button onClick={handleDel}
+            className="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-500 transition-all flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+          </button>
+        </div>
+
+        {error && <p className="text-xs text-red-500 mb-2 font-medium">Incorrect PIN — try again</p>}
+
+        <button onClick={onCancel} className="text-xs text-slate-400 hover:text-slate-600 mt-1">Cancel</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Manager Dashboard ────────────────────────────────────────────────────────
+
+function ManagerDashboard({ invoices, products, settings, onSaveProduct, onDeleteProduct, onExit, bp }) {
+  const isMobile = bp === "mobile";
+  const [tab, setTab] = useState("overview"); // overview | stock | pin
+  const [period, setPeriod] = useState("today"); // today | month | custom
+  const [customFrom, setCustomFrom] = useState(() => {
+    const d = new Date(); d.setDate(1);
+    return d.toISOString().slice(0, 10);
+  });
+  const [customTo, setCustomTo] = useState(() => new Date().toISOString().slice(0, 10));
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [productForm, setProductForm] = useState({ ...BLANK_PRODUCT });
+  const [changingPin, setChangingPin] = useState(false);
+  const [oldPin, setOldPin] = useState("");
+  const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [pinMsg, setPinMsg] = useState(null);
+
+  // ── Period filtering ──
+  const getFilteredInvoices = () => {
+    const now = new Date();
+    return invoices.filter(inv => {
+      const d = new Date(inv.date);
+      if (period === "today") return d.toDateString() === now.toDateString();
+      if (period === "month") return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      if (period === "custom") {
+        const from = new Date(customFrom); from.setHours(0,0,0,0);
+        const to   = new Date(customTo);   to.setHours(23,59,59,999);
+        return d >= from && d <= to;
+      }
+      return true;
+    });
+  };
+
+  const filtered = getFilteredInvoices();
+
+  const calcTotal = (inv) => {
+    const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
+    return sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
+  };
+
+  const totalRevenue    = filtered.reduce((s, inv) => s + calcTotal(inv), 0);
+  const totalPaid       = filtered.reduce((s, inv) => s + (inv.amountPaid || 0), 0);
+  const totalBalance    = filtered.reduce((s, inv) => s + (inv.balance || 0), 0);
+  const invoiceCount    = filtered.length;
+  const paidCount       = filtered.filter(i => i.status === "paid").length;
+  const unpaidCount     = filtered.filter(i => i.status === "unpaid").length;
+  const partialCount    = filtered.filter(i => i.status === "partial").length;
+
+  // Top products in period
+  const productSalesMap = {};
+  const productRevenueMap = {};
+  filtered.forEach(inv => inv.items.forEach(item => {
+    productSalesMap[item.name]    = (productSalesMap[item.name]    || 0) + item.qty;
+    productRevenueMap[item.name]  = (productRevenueMap[item.name]  || 0) + item.qty * item.price;
+  }));
+  const topProducts = Object.entries(productSalesMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+  // Daily breakdown for custom/month
+  const dailyMap = {};
+  filtered.forEach(inv => {
+    const key = new Date(inv.date).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    dailyMap[key] = (dailyMap[key] || 0) + calcTotal(inv);
+  });
+  const dailyData = Object.entries(dailyMap).sort((a, b) => new Date(a[0]) - new Date(b[0]));
+  const maxDay = Math.max(...dailyData.map(d => d[1]), 1);
+
+  // Low stock
+  const lowStock = products.filter(p => (p.stock ?? 0) <= 3).sort((a, b) => a.stock - b.stock);
+
+  const periodLabel = period === "today" ? "Today" : period === "month" ? "This Month" : `${customFrom} → ${customTo}`;
+
+  const startEditProduct = (p) => { setProductForm({ ...p }); setEditingProduct(p); };
+  const startNewProduct  = () => { setProductForm({ ...BLANK_PRODUCT, id: genId() }); setEditingProduct("new"); };
+  const handleSaveProduct = () => { onSaveProduct(productForm); setEditingProduct(null); };
+
+  const handleChangePin = () => {
+    const stored = ls.get(MANAGER_PIN_KEY, DEFAULT_MANAGER_PIN);
+    if (oldPin !== stored) { setPinMsg({ type: "error", text: "Current PIN is incorrect" }); return; }
+    if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) { setPinMsg({ type: "error", text: "New PIN must be exactly 4 digits" }); return; }
+    if (newPin !== confirmPin) { setPinMsg({ type: "error", text: "PINs do not match" }); return; }
+    ls.set(MANAGER_PIN_KEY, newPin);
+    setPinMsg({ type: "success", text: "PIN changed successfully!" });
+    setOldPin(""); setNewPin(""); setConfirmPin("");
+    setTimeout(() => setPinMsg(null), 3000);
+  };
+
+  const cur = settings.currency;
+
+  const TABS = [
+    { id: "overview", label: "Overview",  icon: <TrendingUp size={15} /> },
+    { id: "stock",    label: "Stock",     icon: <Package size={15} /> },
+    { id: "pin",      label: "PIN",       icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-violet-950 via-purple-900 to-slate-900" style={{ fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');`}</style>
+
+      {/* Header */}
+      <div className="sticky top-0 z-20 bg-black/30 backdrop-blur-md border-b border-white/10 px-4 sm:px-6 py-3 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-lg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <div>
+            <p className="text-white font-bold text-sm leading-none">Manager View</p>
+            <p className="text-violet-300 text-[10px] mt-0.5 leading-none">{settings.companyName}</p>
+          </div>
+        </div>
+        <button onClick={onExit}
+          className="flex items-center gap-1.5 text-xs text-violet-300 hover:text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-all">
+          <X size={12} /> Exit
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="px-4 sm:px-6 pt-4">
+        <div className="flex gap-1.5 bg-black/20 backdrop-blur-sm rounded-2xl p-1.5 w-fit">
+          {TABS.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${tab === t.id ? "bg-white text-violet-700 shadow" : "text-violet-200 hover:text-white hover:bg-white/10"}`}>
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={`px-4 sm:px-6 py-4 ${isMobile ? "pb-8" : "pb-8"}`}>
+
+        {/* ── Overview Tab ── */}
+        {tab === "overview" && (
+          <div className="space-y-4">
+            {/* Period selector */}
+            <div className="flex flex-wrap gap-2 items-center">
+              {["today","month","custom"].map(p => (
+                <button key={p} onClick={() => setPeriod(p)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all capitalize ${period === p ? "bg-violet-500 text-white shadow" : "bg-white/10 text-violet-200 hover:bg-white/20"}`}>
+                  {p === "today" ? "Today" : p === "month" ? "This Month" : "Custom Range"}
+                </button>
+              ))}
+              {period === "custom" && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)}
+                    className="text-xs py-1.5 px-2 rounded-xl bg-white/10 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-violet-400/50" />
+                  <span className="text-violet-300 text-xs">to</span>
+                  <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)}
+                    className="text-xs py-1.5 px-2 rounded-xl bg-white/10 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-violet-400/50" />
+                </div>
+              )}
+            </div>
+
+            {/* KPI cards */}
+            <div className={`grid gap-3 ${isMobile ? "grid-cols-2" : "grid-cols-2 lg:grid-cols-4"}`}>
+              {[
+                { label: "Total Revenue",  value: formatCurrency(totalRevenue, cur),  sub: periodLabel, color: "from-violet-500 to-purple-600" },
+                { label: "Amount Collected",value: formatCurrency(totalPaid, cur),     sub: `${paidCount} paid invoices`, color: "from-emerald-500 to-teal-600" },
+                { label: "Outstanding",    value: formatCurrency(totalBalance, cur),   sub: `${unpaidCount + partialCount} unpaid`, color: "from-amber-500 to-orange-500" },
+                { label: "Invoices",       value: invoiceCount,                        sub: periodLabel, color: "from-blue-500 to-cyan-500" },
+              ].map((card, i) => (
+                <div key={i} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                  <div className={`inline-block text-xs font-bold text-white bg-gradient-to-r ${card.color} px-2 py-0.5 rounded-lg mb-2`}>
+                    {card.label}
+                  </div>
+                  <p className={`font-bold text-white ${isMobile ? "text-xl" : "text-2xl"} leading-none`}>{card.value}</p>
+                  <p className="text-violet-300 text-xs mt-1">{card.sub}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Payment status breakdown */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+              <h3 className="text-white font-semibold text-sm mb-3">Payment Status Breakdown</h3>
+              <div className="flex gap-4 flex-wrap">
+                {[
+                  { label: "Paid",    count: paidCount,    pct: invoiceCount ? Math.round(paidCount/invoiceCount*100) : 0,    color: "bg-emerald-500" },
+                  { label: "Partial", count: partialCount, pct: invoiceCount ? Math.round(partialCount/invoiceCount*100) : 0, color: "bg-amber-500" },
+                  { label: "Unpaid",  count: unpaidCount,  pct: invoiceCount ? Math.round(unpaidCount/invoiceCount*100) : 0,  color: "bg-red-500" },
+                ].map((s, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${s.color}`} />
+                    <span className="text-violet-200 text-xs">{s.label}</span>
+                    <span className="text-white text-xs font-bold">{s.count}</span>
+                    <span className="text-violet-400 text-xs">({s.pct}%)</span>
+                  </div>
+                ))}
+              </div>
+              {invoiceCount > 0 && (
+                <div className="mt-3 h-2 bg-white/10 rounded-full overflow-hidden flex">
+                  <div className="bg-emerald-500 h-full transition-all" style={{ width: `${paidCount/invoiceCount*100}%` }} />
+                  <div className="bg-amber-500 h-full transition-all" style={{ width: `${partialCount/invoiceCount*100}%` }} />
+                  <div className="bg-red-500 h-full transition-all" style={{ width: `${unpaidCount/invoiceCount*100}%` }} />
+                </div>
+              )}
+            </div>
+
+            {/* Daily chart — shown for month/custom */}
+            {(period === "month" || period === "custom") && dailyData.length > 0 && (
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                <h3 className="text-white font-semibold text-sm mb-4">Daily Revenue</h3>
+                <div className="flex items-end gap-1.5 h-28 overflow-x-auto pb-1">
+                  {dailyData.map(([date, amt], i) => (
+                    <div key={i} className="flex flex-col items-center gap-1 shrink-0" style={{ minWidth: dailyData.length > 15 ? "28px" : "auto", flex: dailyData.length <= 15 ? "1" : "none" }}>
+                      <div className="relative group w-full flex justify-center">
+                        <div className="bg-gradient-to-t from-violet-500 to-purple-400 rounded-t-lg w-full transition-all hover:from-violet-400 hover:to-purple-300"
+                          style={{ height: `${Math.max((amt / maxDay) * 88, 4)}px` }} />
+                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                          {formatCurrency(amt, cur)}
+                        </div>
+                      </div>
+                      <span className="text-[9px] text-violet-300 whitespace-nowrap">{date}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Top products */}
+            {topProducts.length > 0 && (
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                <h3 className="text-white font-semibold text-sm mb-3">Top Products — {periodLabel}</h3>
+                <div className="space-y-2.5">
+                  {topProducts.map(([name, qty], i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-violet-400 w-4 shrink-0">{i + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-white font-medium truncate mr-2">{name}</span>
+                          <span className="text-violet-300 shrink-0">{qty} units · {formatCurrency(productRevenueMap[name] || 0, cur)}</span>
+                        </div>
+                        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-violet-400 to-purple-400 rounded-full"
+                            style={{ width: `${(qty / topProducts[0][1]) * 100}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {invoiceCount === 0 && (
+              <div className="text-center py-16">
+                <TrendingUp size={40} className="mx-auto mb-3 text-violet-400 opacity-40" />
+                <p className="text-violet-300 text-sm">No invoices for {periodLabel.toLowerCase()}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Stock Tab ── */}
+        {tab === "stock" && (
+          <div className="space-y-4">
+            {/* Low stock alert */}
+            {lowStock.length > 0 && (
+              <div className="bg-amber-500/20 border border-amber-400/30 rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle size={15} className="text-amber-400" />
+                  <h3 className="text-amber-300 font-semibold text-sm">{lowStock.length} item{lowStock.length !== 1 ? "s" : ""} low on stock</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {lowStock.map(p => (
+                    <span key={p.id} className={`text-xs px-2.5 py-1 rounded-xl font-medium ${p.stock === 0 ? "bg-red-500/30 text-red-300 border border-red-400/30" : "bg-amber-500/20 text-amber-300 border border-amber-400/20"}`}>
+                      {p.name} ({p.code}) — {p.stock ?? 0} left
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center">
+              <p className="text-violet-200 text-sm font-medium">{products.length} products</p>
+              <button onClick={startNewProduct}
+                className="flex items-center gap-1.5 bg-violet-500 hover:bg-violet-400 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors">
+                <Plus size={13} /> Add Product
+              </button>
+            </div>
+
+            {/* Products list */}
+            <div className={`grid gap-2.5 ${isMobile ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-3"}`}>
+              {products.map(p => (
+                <div key={p.id} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10 hover:bg-white/15 transition-all">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <span className="text-[10px] font-semibold bg-violet-500/30 text-violet-300 px-1.5 py-0.5 rounded-md">{p.category}</span>
+                      <p className="font-semibold text-white text-sm mt-1 leading-tight">{p.name}</p>
+                      <p className="text-[10px] text-violet-400 font-mono mt-0.5">{p.code} · {p.unit}</p>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <button onClick={() => startEditProduct(p)} className="p-1.5 text-violet-400 hover:text-white hover:bg-white/10 rounded-lg transition-all"><Edit2 size={13} /></button>
+                      <button onClick={() => onDeleteProduct(p.id)} className="p-1.5 text-violet-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"><Trash2 size={13} /></button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm font-bold px-2 py-0.5 rounded-lg ${(p.stock ?? 0) === 0 ? "bg-red-500/30 text-red-300" : (p.stock ?? 0) <= 3 ? "bg-amber-500/30 text-amber-300" : "bg-emerald-500/20 text-emerald-300"}`}>
+                      {p.stock ?? 0} in stock
+                    </span>
+                    <span className="text-white font-bold text-sm">{formatCurrency(p.price, cur)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add/Edit Product Modal */}
+            {editingProduct && (
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center">
+                <div className="bg-slate-900 border border-white/10 rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:w-[440px] p-6 max-h-[90vh] overflow-y-auto">
+                  <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4 sm:hidden" />
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="font-bold text-white">{editingProduct === "new" ? "Add Product" : "Edit Product"}</h2>
+                    <button onClick={() => setEditingProduct(null)}><X size={18} className="text-violet-400" /></button>
+                  </div>
+                  <div className="space-y-3">
+                    {[["name","Product Name","text"],["code","Product Code","text"],["unit","Unit","text"],["price","Price","number"],["stock","Stock on Hand","number"],["category","Category","text"],["description","Purity Level","text"]].map(([k,ph,t]) => (
+                      <div key={k}>
+                        <label className="text-xs font-semibold text-violet-400 uppercase tracking-wider">{ph}</label>
+                        <input type={t} value={productForm[k]}
+                          onChange={e => setProductForm(p => ({ ...p, [k]: t === "number" ? parseFloat(e.target.value) || 0 : e.target.value }))}
+                          placeholder={ph}
+                          className="mt-1 w-full text-sm py-2 px-3 bg-white/10 border border-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-400/50 placeholder-violet-500" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 mt-5">
+                    <button onClick={() => setEditingProduct(null)} className="flex-1 py-3 border border-white/10 rounded-xl text-sm text-violet-300">Cancel</button>
+                    <button onClick={handleSaveProduct} className="flex-1 py-3 bg-violet-500 hover:bg-violet-400 rounded-xl text-sm text-white font-semibold transition-colors">Save Product</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── PIN Tab ── */}
+        {tab === "pin" && (
+          <div className="max-w-sm">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+              <h3 className="text-white font-semibold text-sm mb-4">Change Manager PIN</h3>
+              <div className="space-y-3">
+                {[
+                  ["Current PIN", oldPin,    setOldPin],
+                  ["New PIN (4 digits)", newPin, setNewPin],
+                  ["Confirm New PIN", confirmPin, setConfirmPin],
+                ].map(([label, val, setter], i) => (
+                  <div key={i}>
+                    <label className="text-xs font-semibold text-violet-400 uppercase tracking-wider">{label}</label>
+                    <input type="password" maxLength={4} value={val} onChange={e => setter(e.target.value.replace(/\D/g,""))}
+                      placeholder="••••"
+                      className="mt-1 w-full text-sm py-2.5 px-3 bg-white/10 border border-white/10 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-400/50 placeholder-violet-600 tracking-widest" />
+                  </div>
+                ))}
+              </div>
+              {pinMsg && (
+                <div className={`mt-3 text-xs px-3 py-2 rounded-xl font-medium ${pinMsg.type === "error" ? "bg-red-500/20 text-red-300" : "bg-emerald-500/20 text-emerald-300"}`}>
+                  {pinMsg.text}
+                </div>
+              )}
+              <button onClick={handleChangePin}
+                className="mt-4 w-full py-3 bg-violet-500 hover:bg-violet-400 rounded-xl text-sm text-white font-semibold transition-colors">
+                Update PIN
+              </button>
+              <p className="text-violet-400 text-xs mt-3 text-center">Default PIN is <span className="font-mono font-bold">1234</span> — change it after first login.</p>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -1244,6 +1696,8 @@ export default function App() {
   const [repoStatus,  setRepoStatus]  = useState("idle");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(isTablet);
   const [toast, setToast] = useState(null);
+  const [managerMode, setManagerMode] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
   const autoPullDoneRef = useRef(false);
   const autoSyncReadyRef = useRef(false);
   const syncingFromRemoteRef = useRef(false);
@@ -1382,6 +1836,21 @@ export default function App() {
 
   const sharedProps = { bp };
 
+  // ── Manager mode ──
+  if (managerMode) {
+    return (
+      <ManagerDashboard
+        invoices={invoices}
+        products={products}
+        settings={settings}
+        onSaveProduct={saveProduct}
+        onDeleteProduct={deleteProduct}
+        onExit={() => setManagerMode(false)}
+        bp={bp}
+      />
+    );
+  }
+
   const renderView = () => {
     switch (view) {
       case "dashboard":   return <Dashboard   invoices={invoices}  products={products}  customers={customers}  settings={settings} {...sharedProps} />;
@@ -1501,6 +1970,9 @@ export default function App() {
           <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-slate-100 px-5 py-3 flex justify-between items-center shrink-0">
             <p className="text-xs text-slate-400 truncate">{settings.companyName}</p>
             <div className="flex items-center gap-2.5 shrink-0">
+              <button onClick={() => setShowPinModal(true)} className="flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors font-semibold">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Manager
+              </button>
               <button onClick={handlePull} className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors">
                 <RefreshCw size={11} /> Pull
               </button>
@@ -1514,7 +1986,7 @@ export default function App() {
 
         {/* Mobile header */}
         {isMobile && (
-          <MobileHeader view={view} settings={settings} onSync={handleSync} syncStatus={syncStatus} onPull={handlePull} />
+          <MobileHeader view={view} settings={settings} onSync={handleSync} syncStatus={syncStatus} onPull={handlePull} onManagerClick={() => setShowPinModal(true)} />
         )}
 
         {/* Page content */}
@@ -1534,6 +2006,14 @@ export default function App() {
           {toast.type === "error" ? <AlertTriangle size={15} /> : <Check size={15} className="text-emerald-400" />}
           {toast.msg}
         </div>
+      )}
+
+      {/* PIN modal */}
+      {showPinModal && (
+        <PinModal
+          onSuccess={() => { setShowPinModal(false); setManagerMode(true); }}
+          onCancel={() => setShowPinModal(false)}
+        />
       )}
     </div>
   );
