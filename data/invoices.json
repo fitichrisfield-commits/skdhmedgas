@@ -48,5 +48,30 @@
     "paymentMethod": "Cash",
     "notes": "Jojo",
     "status": "unpaid"
+  },
+  {
+    "id": "1780440423968-m58ip",
+    "invoiceNo": "OXY-2026-00003",
+    "date": "2026-06-02T22:47:03.970Z",
+    "dueDate": "2026-06-02T22:47:03.970Z",
+    "customerName": "Effiduase Government Hospital",
+    "customerAddress": "Effiduase",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "1780273025273-yf2yf",
+        "name": "Discounted Oxygen",
+        "code": "O2 MEDIUM",
+        "unit": "pcs",
+        "qty": 28,
+        "price": 150
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 4200,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
