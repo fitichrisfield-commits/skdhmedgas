@@ -43,11 +43,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 1200,
+    "amountPaid": 1200,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "Jojo",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1780440423968-m58ip",
@@ -93,10 +93,10 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 450,
+    "amountPaid": 450,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   }
 ]
