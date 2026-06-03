@@ -73,5 +73,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1780494467955-gah55",
+    "invoiceNo": "OXY-2026-00004",
+    "date": "2026-06-03T13:47:47.956Z",
+    "dueDate": "2026-06-03T13:47:47.956Z",
+    "customerName": "Kalita Family Hospital",
+    "customerAddress": "ASHANTI. SEKYERE EAST DISTRICT EFFIDUASE",
+    "customerPhone": "+233 243833489",
+    "items": [
+      {
+        "id": "1780273025273-yf2yf",
+        "name": "Discounted Oxygen",
+        "code": "O2 MEDIUM",
+        "unit": "pcs",
+        "qty": 3,
+        "price": 150
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 450,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
