@@ -123,30 +123,5 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
-  },
-  {
-    "id": "1781605159733-at0wl",
-    "invoiceNo": "OXY-2026-00006",
-    "date": "2026-06-16T10:19:19.733Z",
-    "dueDate": "2026-06-16T10:19:19.733Z",
-    "customerName": "",
-    "customerAddress": "",
-    "customerPhone": "",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 1,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 150,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
   }
 ]
