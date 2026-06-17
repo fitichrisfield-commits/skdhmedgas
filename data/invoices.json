@@ -98,5 +98,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "paid"
+  },
+  {
+    "id": "1781708389604-6zne2",
+    "invoiceNo": "OXY-2026-00005",
+    "date": "2026-06-17T14:59:49.604Z",
+    "dueDate": "2026-06-17T14:59:49.605Z",
+    "customerName": "Effiduase Government Hospital",
+    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
+    "customerPhone": "024 624 5244",
+    "items": [
+      {
+        "id": "1780273025273-yf2yf",
+        "name": "Discounted Oxygen",
+        "code": "O2 MEDIUM",
+        "unit": "pcs",
+        "qty": 15,
+        "price": 150
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 2250,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
