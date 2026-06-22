@@ -143,10 +143,10 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 1800,
+    "amountPaid": 1800,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   }
 ]
