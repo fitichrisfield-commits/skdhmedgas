@@ -68,11 +68,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 4200,
+    "amountPaid": 4200,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1780494467955-gah55",
