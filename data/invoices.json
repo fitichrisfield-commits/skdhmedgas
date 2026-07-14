@@ -118,11 +118,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 2250,
+    "amountPaid": 2250,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1781896408181-pppr3",
