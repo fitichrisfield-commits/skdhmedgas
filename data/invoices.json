@@ -298,30 +298,5 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
-  },
-  {
-    "id": "1784215284268-gz82o",
-    "invoiceNo": "OXY-2026-00014",
-    "date": "2026-07-16T15:21:24.268Z",
-    "dueDate": "2026-07-16T15:21:24.268Z",
-    "customerName": "Jamasi Polyclinic",
-    "customerAddress": "Jamasi",
-    "customerPhone": "0547474206",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 7,
-        "price": 150
-      }
-    ],
-    "discount": 70,
-    "amountPaid": 980,
-    "balance": 0,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "paid"
   }
 ]
