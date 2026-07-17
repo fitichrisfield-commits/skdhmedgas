@@ -293,11 +293,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 2100,
+    "amountPaid": 2100,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1784221517944-hwoxt",
