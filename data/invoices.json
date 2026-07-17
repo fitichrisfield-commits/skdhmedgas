@@ -193,11 +193,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 450,
-    "balance": 1800,
+    "amountPaid": 2250,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "partial"
+    "status": "paid"
   },
   {
     "id": "1782521709297-4pnnm",
