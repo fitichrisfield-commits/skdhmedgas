@@ -193,8 +193,8 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 450,
-    "balance": 1800,
+    "amountPaid": 1800,
+    "balance": 450,
     "paymentMethod": "Cash",
     "notes": "",
     "status": "partial"
