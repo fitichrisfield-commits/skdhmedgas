@@ -5,7 +5,8 @@ import {
   Printer, Save, X, Check, Cloud, CloudOff, Search,
   AlertTriangle, Wind, TrendingUp, ChevronRight,
   Loader2, Github, Eye, EyeOff, UserPlus, Menu,
-  ChevronUp, ArrowUp
+  ChevronUp, ArrowUp, ArrowLeft, Phone, Mail, MapPin,
+  Wallet, Receipt, StickyNote
 } from "lucide-react";
 
 // ─── Breakpoint Hook ──────────────────────────────────────────────────────────
@@ -1210,14 +1211,191 @@ function Products({ products, settings, onSave, onDelete, bp }) {
   );
 }
 
+// ─── Customer Dashboard ───────────────────────────────────────────────────────
+
+function CustomerDashboard({ customer, invoices, settings, onUpdate, onDelete, onClose, bp }) {
+  const isMobile = bp === "mobile";
+  const cur = settings.currency;
+  const [preview, setPreview] = useState(null);
+  const [paying, setPaying]   = useState(null);
+  const [payInput, setPayInput] = useState(0);
+
+  const calcTotal = inv => {
+    const sub = inv.items.reduce((a, i) => a + i.qty * i.price, 0);
+    return sub + sub * (settings.vatRate / 100) - (inv.discount || 0);
+  };
+
+  const custInvoices = invoices
+    .filter(inv => inv.customerName === customer.name)
+    .slice().reverse();
+
+  const totalInvoices = custInvoices.length;
+  const lifetimeValue = custInvoices.reduce((s, inv) => s + calcTotal(inv), 0);
+  const totalCollected = custInvoices.reduce((s, inv) => s + (inv.amountPaid || 0), 0);
+  const totalOutstanding = custInvoices.reduce((s, inv) => s + (inv.status === "paid" ? 0 : (inv.balance || 0)), 0);
+  const paidCount    = custInvoices.filter(i => i.status === "paid").length;
+  const partialCount = custInvoices.filter(i => i.status === "partial").length;
+  const unpaidCount  = custInvoices.filter(i => i.status === "unpaid").length;
+  const lastInvoice  = custInvoices[0];
+
+  const openPay = (inv) => {
+    setPaying({ ...inv, _total: calcTotal(inv) });
+    setPayInput(inv.amountPaid || 0);
+  };
+
+  const handleUpdatePayment = () => {
+    const total = paying._total;
+    const paid = Math.min(Math.max(parseFloat(payInput) || 0, 0), total);
+    const balance = Math.max(total - paid, 0);
+    const status = paid <= 0 ? "unpaid" : balance > 0 ? "partial" : "paid";
+    onUpdate({ ...paying, amountPaid: paid, balance, status, _total: undefined });
+    setPaying(null);
+  };
+
+  const statusConfig = {
+    paid:    { dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-600 border-emerald-100", label: "Fully Paid" },
+    partial: { dot: "bg-amber-400",   badge: "bg-amber-50 text-amber-600 border-amber-100",       label: "Part Paid" },
+    unpaid:  { dot: "bg-red-400",     badge: "bg-red-50 text-red-500 border-red-100",             label: "Unpaid" },
+  };
+
+  const statCards = [
+    { label: "Lifetime Value",  value: formatCurrency(lifetimeValue, cur),   icon: TrendingUp, bg: "bg-slate-50",   border: "border-slate-100",  text: "text-slate-800" },
+    { label: "Total Collected", value: formatCurrency(totalCollected, cur),  icon: Wallet,      bg: "bg-emerald-50", border: "border-emerald-100", text: "text-emerald-600" },
+    { label: "Outstanding",     value: formatCurrency(totalOutstanding, cur),icon: AlertTriangle,bg: "bg-red-50",    border: "border-red-100",    text: "text-red-500" },
+    { label: "Invoices",        value: totalInvoices,                        icon: Receipt,     bg: "bg-cyan-50",   border: "border-cyan-100",   text: "text-cyan-600" },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center">
+      <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:w-[720px] sm:max-h-[88vh] max-h-[92vh] overflow-y-auto">
+        <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mt-3 mb-1 sm:hidden" />
+
+        {/* Header */}
+        <div className="p-5 sm:p-6 border-b border-slate-100 flex items-start gap-3 sticky top-0 bg-white z-10">
+          <button onClick={onClose} className="p-2 -ml-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-50 shrink-0">
+            <ArrowLeft size={18} />
+          </button>
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
+            {customer.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-slate-800 text-base truncate">{customer.name}</h2>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-0.5">
+              {customer.phone && <span className="text-xs text-slate-500 flex items-center gap-1"><Phone size={11} />{customer.phone}</span>}
+              {customer.email && <span className="text-xs text-slate-500 flex items-center gap-1"><Mail size={11} />{customer.email}</span>}
+            </div>
+            {customer.address && <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5"><MapPin size={11} className="shrink-0" />{customer.address}</p>}
+          </div>
+          <button onClick={onClose} className="hidden sm:block p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-50"><X size={18} /></button>
+        </div>
+
+        <div className={`p-4 ${isMobile ? "" : "p-6"} space-y-4`}>
+          {customer.notes && (
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 flex gap-2 items-start">
+              <StickyNote size={14} className="text-slate-400 mt-0.5 shrink-0" />
+              <p className="text-xs text-slate-500">{customer.notes}</p>
+            </div>
+          )}
+
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 gap-3">
+            {statCards.map((c, i) => (
+              <div key={i} className={`rounded-2xl p-4 border ${c.bg} ${c.border}`}>
+                <div className="flex items-center gap-1.5 mb-1"><c.icon size={12} className={c.text} /><p className="text-xs font-semibold text-slate-500">{c.label}</p></div>
+                <p className={`text-lg font-bold ${c.text}`}>{c.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Status breakdown */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            <span className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-600"><span className="w-2 h-2 rounded-full bg-emerald-500" />Paid {paidCount}</span>
+            <span className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-50 text-amber-600"><span className="w-2 h-2 rounded-full bg-amber-400" />Partial {partialCount}</span>
+            <span className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-red-50 text-red-500"><span className="w-2 h-2 rounded-full bg-red-400" />Unpaid {unpaidCount}</span>
+            {lastInvoice && <span className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-500">Last order: {formatDate(lastInvoice.date)}</span>}
+          </div>
+
+          {/* Invoice history */}
+          <div>
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Invoice History</h3>
+            {custInvoices.length === 0 ? (
+              <div className="text-center py-10 text-slate-400"><FileText size={28} className="mx-auto mb-2 opacity-20" /><p className="text-sm">No invoices for this customer yet</p></div>
+            ) : (
+              <div className="space-y-2">
+                {custInvoices.map(inv => {
+                  const total = calcTotal(inv);
+                  const status = inv.status || "unpaid";
+                  const sc = statusConfig[status] || statusConfig.unpaid;
+                  return (
+                    <div key={inv.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-3.5">
+                      <div className="flex justify-between items-start mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-cyan-600 text-sm">{inv.invoiceNo}</span>
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border ${sc.badge}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />{sc.label}
+                          </span>
+                        </div>
+                        <span className="font-bold text-slate-800 text-sm">{formatCurrency(total, cur)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-xs text-slate-400">{formatDate(inv.date)} · {inv.paymentMethod || "Cash"} · {inv.items.length} item{inv.items.length !== 1 ? "s" : ""}</p>
+                        <div className="flex gap-1">
+                          {inv.status !== "paid" && (
+                            <button onClick={() => openPay(inv)} className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors" title="Update Payment"><Check size={13} /></button>
+                          )}
+                          <button onClick={() => setPreview(inv)} className="p-1.5 text-slate-400 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-colors"><Eye size={13} /></button>
+                          <button onClick={() => onDelete(inv.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"><Trash2 size={13} /></button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Update Payment Modal */}
+      {paying && (
+        <div className="fixed inset-0 z-[60] bg-black/40 flex items-end sm:items-center justify-center">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:w-[380px] p-6">
+            <div className="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4 sm:hidden" />
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="font-bold text-slate-800">Update Payment</h2>
+              <button onClick={() => setPaying(null)}><X size={18} className="text-slate-400" /></button>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-1">
+              <div className="flex justify-between text-xs text-slate-500"><span>Invoice</span><span className="font-semibold text-cyan-600">{paying.invoiceNo}</span></div>
+              <div className="flex justify-between text-xs font-bold text-slate-800"><span>Total</span><span>{formatCurrency(paying._total, cur)}</span></div>
+              <div className="flex justify-between text-xs text-slate-500"><span>Previously Paid</span><span>{formatCurrency(paying.amountPaid || 0, cur)}</span></div>
+            </div>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount Paid</label>
+            <input type="number" value={payInput} onChange={e => setPayInput(e.target.value)}
+              className="mt-1 w-full text-sm py-2 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 mb-2" />
+            <button onClick={() => setPayInput(paying._total)} className="text-xs text-cyan-600 hover:underline mb-4 block">Mark as fully paid</button>
+            <div className="flex gap-2">
+              <button onClick={() => setPaying(null)} className="flex-1 py-3 border border-slate-200 rounded-xl text-sm text-slate-600">Cancel</button>
+              <button onClick={handleUpdatePayment} className="flex-1 py-3 bg-emerald-500 rounded-xl text-sm text-white font-semibold">Update</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {preview && <InvoicePreview invoice={preview} settings={settings} onClose={() => setPreview(null)} />}
+    </div>
+  );
+}
+
 // ─── Customers View ───────────────────────────────────────────────────────────
 
 const BLANK_CUSTOMER = { name: "", address: "", phone: "", email: "", notes: "" };
 
-function CustomersView({ customers, onSave, onDelete, bp }) {
+function CustomersView({ customers, invoices, settings, onSave, onDelete, onUpdateInvoice, onDeleteInvoice, bp }) {
   const isMobile = bp === "mobile";
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(BLANK_CUSTOMER);
+  const [viewingCustomer, setViewingCustomer] = useState(null);
   const startNew = () => { setForm({ ...BLANK_CUSTOMER, id: genId() }); setEditing("new"); };
   const startEdit = (c) => { setForm({ ...c }); setEditing(c); };
 
@@ -1233,8 +1411,11 @@ function CustomersView({ customers, onSave, onDelete, bp }) {
       <div className={`grid gap-3 ${isMobile ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-3"}`}>
         {customers.length === 0 ? (
           <div className="col-span-full text-center py-12 text-slate-400"><Users size={36} className="mx-auto mb-2 opacity-20" /><p>No customers yet</p></div>
-        ) : customers.map(c => (
-          <div key={c.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex gap-3 items-start">
+        ) : customers.map(c => {
+          const custInvoiceCount = invoices.filter(inv => inv.customerName === c.name).length;
+          return (
+          <div key={c.id} onClick={() => setViewingCustomer(c)}
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex gap-3 items-start cursor-pointer hover:border-cyan-200 hover:shadow-md transition-all">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
               {c.name.charAt(0).toUpperCase()}
             </div>
@@ -1243,14 +1424,27 @@ function CustomersView({ customers, onSave, onDelete, bp }) {
               {c.phone && <p className="text-xs text-slate-500 mt-0.5">{c.phone}</p>}
               {c.email && <p className="text-xs text-slate-400 truncate">{c.email}</p>}
               {c.address && <p className="text-xs text-slate-400 mt-1 leading-tight">{c.address}</p>}
+              <p className="text-xs text-cyan-600 font-medium mt-1.5 flex items-center gap-1">{custInvoiceCount} invoice{custInvoiceCount !== 1 ? "s" : ""} <ChevronRight size={12} /></p>
             </div>
             <div className="flex flex-col gap-1 shrink-0">
-              <button onClick={() => startEdit(c)} className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg"><Edit2 size={13} /></button>
-              <button onClick={() => onDelete(c.id)} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={13} /></button>
+              <button onClick={(e) => { e.stopPropagation(); startEdit(c); }} className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg"><Edit2 size={13} /></button>
+              <button onClick={(e) => { e.stopPropagation(); onDelete(c.id); }} className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={13} /></button>
             </div>
           </div>
-        ))}
+        );})}
       </div>
+
+      {viewingCustomer && (
+        <CustomerDashboard
+          customer={viewingCustomer}
+          invoices={invoices}
+          settings={settings}
+          onUpdate={onUpdateInvoice}
+          onDelete={onDeleteInvoice}
+          onClose={() => setViewingCustomer(null)}
+          bp={bp}
+        />
+      )}
 
       {editing && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center">
@@ -2024,7 +2218,7 @@ export default function App() {
       case "new-invoice": return <NewInvoice  products={products}  customers={customers} invoices={invoices}  settings={settings}  onSave={saveInvoice}    {...sharedProps} />;
       case "invoices":    return <Invoices    invoices={invoices}  settings={settings}  onDelete={deleteInvoice} onUpdate={updateInvoice}                                    {...sharedProps} />;
       case "products":    return <Products    products={products}  settings={settings}  onSave={saveProduct}   onDelete={deleteProduct}                    {...sharedProps} />;
-      case "customers":   return <CustomersView customers={customers} onSave={saveCustomer} onDelete={deleteCustomer}                                      {...sharedProps} />;
+      case "customers":   return <CustomersView customers={customers} invoices={invoices} settings={settings} onSave={saveCustomer} onDelete={deleteCustomer} onUpdateInvoice={updateInvoice} onDeleteInvoice={deleteInvoice} {...sharedProps} />;
       case "settings":    return <SettingsView settings={settings} onSave={setSettings} onCreateRepo={handleCreateRepo} repoStatus={repoStatus}            {...sharedProps} />;
       default: return null;
     }
