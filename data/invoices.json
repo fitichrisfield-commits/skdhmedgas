@@ -373,5 +373,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1784824707389-ykt22",
+    "invoiceNo": "OXY-2026-00017",
+    "date": "2026-07-23T16:38:27.389Z",
+    "dueDate": "2026-07-23T16:38:27.389Z",
+    "customerName": "Effiduase Government Hospital",
+    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
+    "customerPhone": "024 624 5244",
+    "items": [
+      {
+        "id": "1780271643030-zrwln",
+        "name": "Medical Oxygen",
+        "code": "O2-m",
+        "unit": "pcs",
+        "qty": 2,
+        "price": 60
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 120,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
