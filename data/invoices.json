@@ -393,11 +393,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 120,
+    "amountPaid": 120,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1785342239831-szb5y",
