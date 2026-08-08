@@ -368,11 +368,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 1050,
+    "amountPaid": 1050,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1784824707389-ykt22",
