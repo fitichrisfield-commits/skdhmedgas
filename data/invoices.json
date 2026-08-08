@@ -418,11 +418,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 2400,
+    "amountPaid": 2400,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1785841293791-vq1y0",
