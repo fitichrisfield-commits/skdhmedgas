@@ -34,7 +34,7 @@
     "code": "O2-m",
     "unit": "pcs",
     "price": 60,
-    "stock": 96,
+    "stock": 100,
     "category": "Oxygen",
     "description": "Mini O2 cylinder",
     "id": "1780271643030-zrwln"
@@ -44,7 +44,7 @@
     "code": "O2 MEDIUM",
     "unit": "pcs",
     "price": 150,
-    "stock": 816,
+    "stock": 141,
     "category": "Oxygen",
     "description": "",
     "id": "1780273025273-yf2yf"
