@@ -268,11 +268,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 2100,
-    "balance": 0,
+    "amountPaid": 0,
+    "balance": 2100,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "paid"
+    "status": "unpaid"
   },
   {
     "id": "1783766750842-81tm6",
@@ -343,11 +343,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 1350,
-    "balance": 0,
+    "amountPaid": 0,
+    "balance": 1350,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "paid"
+    "status": "unpaid"
   },
   {
     "id": "1784312230030-s62ck",
@@ -368,11 +368,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 1050,
-    "balance": 0,
+    "amountPaid": 0,
+    "balance": 1050,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "paid"
+    "status": "unpaid"
   },
   {
     "id": "1784824707389-ykt22",
@@ -393,208 +393,8 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 120,
-    "balance": 0,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "paid"
-  },
-  {
-    "id": "1785342239831-szb5y",
-    "invoiceNo": "OXY-2026-00018",
-    "date": "2026-07-29T16:23:59.831Z",
-    "dueDate": "2026-07-29T16:23:59.831Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 16,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 2400,
-    "balance": 0,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "paid"
-  },
-  {
-    "id": "1785841293791-vq1y0",
-    "invoiceNo": "OXY-2026-00019",
-    "date": "2026-08-04T11:01:33.792Z",
-    "dueDate": "2026-08-04T11:01:33.792Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 8,
-        "price": 150
-      }
-    ],
-    "discount": 0,
     "amountPaid": 0,
-    "balance": 1200,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
-  },
-  {
-    "id": "1786181740460-6ei7q",
-    "invoiceNo": "OXY-2026-00020",
-    "date": "2026-08-08T09:35:40.460Z",
-    "dueDate": "2026-08-08T09:35:40.460Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 9,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 1350,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
-  },
-  {
-    "id": "1786510419067-jid9z",
-    "invoiceNo": "OXY-2026-00021",
-    "date": "2026-08-12T04:53:39.067Z",
-    "dueDate": "2026-08-12T04:53:39.067Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 5,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 750,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
-  },
-  {
-    "id": "1786643806409-cibkv",
-    "invoiceNo": "OXY-2026-00022",
-    "date": "2026-08-13T17:56:46.409Z",
-    "dueDate": "2026-08-13T17:56:46.411Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 10,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 1500,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
-  },
-  {
-    "id": "1787044040810-f2mul",
-    "invoiceNo": "OXY-2026-00023",
-    "date": "2026-08-18T09:07:20.811Z",
-    "dueDate": "2026-08-18T09:07:20.811Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 13,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 1950,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
-  },
-  {
-    "id": "1788190519419-cxrtq",
-    "invoiceNo": "OXY-2026-00024",
-    "date": "2026-08-31T15:35:19.419Z",
-    "dueDate": "2026-08-31T15:35:19.419Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 8,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 1200,
-    "paymentMethod": "Cash",
-    "notes": "",
-    "status": "unpaid"
-  },
-  {
-    "id": "1788541955565-neij3",
-    "invoiceNo": "OXY-2026-00025",
-    "date": "2026-09-04T17:12:35.565Z",
-    "dueDate": "2026-09-04T17:12:35.565Z",
-    "customerName": "Effiduase Government Hospital",
-    "customerAddress": "ASHANTI, SEKYERE EAST DISTRICT, EFFIDUASE",
-    "customerPhone": "024 624 5244",
-    "items": [
-      {
-        "id": "1780273025273-yf2yf",
-        "name": "Discounted Oxygen",
-        "code": "O2 MEDIUM",
-        "unit": "pcs",
-        "qty": 15,
-        "price": 150
-      }
-    ],
-    "discount": 0,
-    "amountPaid": 0,
-    "balance": 2250,
+    "balance": 120,
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
