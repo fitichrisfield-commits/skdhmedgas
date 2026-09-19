@@ -2293,6 +2293,11 @@ export default function App() {
   margin: 15mm;
 }
 
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
 @media print {
   html, body {
     background: #fff !important;
@@ -2302,10 +2307,23 @@ export default function App() {
   body * {
     visibility: hidden !important;
   }
+  #invoice-overlay,
+  #invoice-box,
   #invoice-print,
   #invoice-print * {
     visibility: visible !important;
+  }
+  #invoice-overlay {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
     overflow: visible !important;
+  }
+  #invoice-box {
+    max-width: none !important;
+    width: 100% !important;
+    overflow: visible !important;
+    box-shadow: none !important;
   }
   #invoice-print {
     background: #fff !important;
@@ -2320,7 +2338,8 @@ export default function App() {
     width: 100% !important;
     min-width: 0 !important;
   }
-  .print\\:hidden { display: none !important; }
+  .print\:hidden { display: none !important; }
+}
 }
         }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
