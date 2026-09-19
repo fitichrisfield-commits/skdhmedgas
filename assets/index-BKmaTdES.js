@@ -72,28 +72,40 @@ Error generating stack: `+a.message+`
           .rounded-t-3xl { background-color: var(--bg-card) !important; }
         }
 
-        @media print {
-          html, body {
-            background: #fff !important;
-            margin: 0 !important;
-          }
-          body * {
-            visibility: hidden !important;
-          }
-          #invoice-print,
-          #invoice-print * {
-            visibility: visible !important;
-          }
-          #invoice-print {
-            background: #fff !important;
-            display: block !important;
-            left: 0 !important;
-            padding: 24px !important;
-            position: absolute !important;
-            top: 0 !important;
-            width: 100% !important;
-          }
-          .print\\:hidden { display: none !important; }
+        @page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  html, body {
+    background: #fff !important;
+    margin: 0 !important;
+    width: 210mm !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  #invoice-print,
+  #invoice-print * {
+    visibility: visible !important;
+    overflow: visible !important;
+  }
+  #invoice-print {
+    background: #fff !important;
+    display: block !important;
+    position: static !important;
+    width: 180mm !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  #invoice-print table {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .print\\:hidden { display: none !important; }
+}
         }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
       `}),!C&&s.jsx(mh,{view:o,setView:U,syncStatus:w,onSync:h,collapsed:G,setCollapsed:ge,bp:d}),s.jsxs("div",{className:"flex-1 flex flex-col min-w-0 overflow-hidden",children:[!C&&s.jsxs("div",{className:"sticky top-0 z-10 bg-white/90 backdrop-blur-sm border-b border-slate-100 px-5 py-3 flex justify-between items-center shrink-0",children:[s.jsx("p",{className:"text-xs text-slate-400 truncate",children:S.companyName}),s.jsxs("div",{className:"flex items-center gap-2.5 shrink-0",children:[s.jsxs("button",{onClick:()=>Ne(!0),className:"flex items-center gap-1.5 text-xs text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors font-semibold",children:[s.jsxs("svg",{width:"11",height:"11",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"2",children:[s.jsx("rect",{x:"3",y:"11",width:"18",height:"11",rx:"2"}),s.jsx("path",{d:"M7 11V7a5 5 0 0110 0v4"})]})," Manager"]}),s.jsxs("button",{onClick:O,className:"flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors",children:[s.jsx(c0,{size:11})," Pull"]}),s.jsxs("div",{className:"flex items-center gap-1.5 text-xs text-slate-400",children:[s.jsx("div",{className:"w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"}),"Local Storage Active"]})]})]}),C&&s.jsx(hh,{view:o,settings:S,onSync:h,syncStatus:w,onPull:O,onManagerClick:()=>Ne(!0)}),s.jsx("main",{className:"flex-1 overflow-y-auto",children:he()})]}),C&&s.jsx(xh,{view:o,setView:U}),re&&s.jsxs("div",{className:`fixed z-[60] flex items-center gap-2 px-4 py-3 rounded-2xl shadow-xl text-sm font-medium transition-all
