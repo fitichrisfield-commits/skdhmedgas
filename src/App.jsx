@@ -183,8 +183,8 @@ function InvoicePreview({ invoice, settings, onClose }) {
   const cur = settings.currency;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-4 px-2">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
+    <div id="invoice-overlay" className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-4 px-2">
+      <div id="invoice-box" className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex justify-between items-center px-5 py-3 bg-slate-800 print:hidden">
           <span className="text-white font-semibold text-sm">Invoice Preview</span>
           <div className="flex gap-2">
