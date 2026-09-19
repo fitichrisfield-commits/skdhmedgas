@@ -2288,28 +2288,40 @@ export default function App() {
           .rounded-t-3xl { background-color: var(--bg-card) !important; }
         }
 
-        @media print {
-          html, body {
-            background: #fff !important;
-            margin: 0 !important;
-          }
-          body * {
-            visibility: hidden !important;
-          }
-          #invoice-print,
-          #invoice-print * {
-            visibility: visible !important;
-          }
-          #invoice-print {
-            background: #fff !important;
-            display: block !important;
-            left: 0 !important;
-            padding: 24px !important;
-            position: absolute !important;
-            top: 0 !important;
-            width: 100% !important;
-          }
-          .print\\:hidden { display: none !important; }
+        @page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  html, body {
+    background: #fff !important;
+    margin: 0 !important;
+    width: 210mm !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  #invoice-print,
+  #invoice-print * {
+    visibility: visible !important;
+    overflow: visible !important;
+  }
+  #invoice-print {
+    background: #fff !important;
+    display: block !important;
+    position: static !important;
+    width: 180mm !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  #invoice-print table {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .print\\:hidden { display: none !important; }
+}
         }
         .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
       `}</style>
