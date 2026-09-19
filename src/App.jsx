@@ -267,7 +267,7 @@ function InvoicePreview({ invoice, settings, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
     document.body
   );
 }
