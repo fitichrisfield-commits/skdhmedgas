@@ -184,6 +184,7 @@ function InvoicePreview({ invoice, settings, onClose }) {
   const cur = settings.currency;
 
   return (
+      return createPortal(
     <div id="invoice-overlay" className="fixed inset-0 z-50 bg-black/60 flex items-start justify-center overflow-y-auto py-4 px-2">
       <div id="invoice-box" className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex justify-between items-center px-5 py-3 bg-slate-800 print:hidden">
@@ -268,6 +269,7 @@ function InvoicePreview({ invoice, settings, onClose }) {
         </div>
       </div>
     </div>
+    document.body
   );
 }
 
@@ -2226,7 +2228,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex bg-slate-50 min-h-screen" style={{ fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif" }}>
+    <div id="app-shell" className="flex bg-slate-50 min-h-screen" style={{ fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
 
@@ -2303,33 +2305,29 @@ export default function App() {
   html, body {
     background: #fff !important;
     margin: 0 !important;
-    width: 210mm !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-  body * {
-    visibility: hidden !important;
-  }
-  #invoice-overlay,
-  #invoice-box,
-  #invoice-print,
-  #invoice-print * {
-    visibility: visible !important;
+  #app-shell {
+    display: none !important;
   }
   #invoice-overlay {
     position: static !important;
     inset: auto !important;
     display: block !important;
     overflow: visible !important;
+    background: #fff !important;
   }
   #invoice-box {
     max-width: none !important;
     width: 100% !important;
     overflow: visible !important;
     box-shadow: none !important;
+    border-radius: 0 !important;
   }
   #invoice-print {
     background: #fff !important;
     display: block !important;
-    position: static !important;
     width: 180mm !important;
     max-width: none !important;
     margin: 0 auto !important;
