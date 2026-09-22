@@ -518,11 +518,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 1500,
+    "amountPaid": 150,
+    "balance": 1350,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "partial"
   },
   {
     "id": "1787044040810-f2mul",
