@@ -493,11 +493,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 750,
+    "amountPaid": 750,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1786643806409-cibkv",
