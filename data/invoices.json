@@ -468,11 +468,11 @@
       }
     ],
     "discount": 0,
-    "amountPaid": 0,
-    "balance": 1350,
+    "amountPaid": 1350,
+    "balance": 0,
     "paymentMethod": "Cash",
     "notes": "",
-    "status": "unpaid"
+    "status": "paid"
   },
   {
     "id": "1786510419067-jid9z",
