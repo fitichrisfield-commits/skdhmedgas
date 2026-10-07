@@ -2,51 +2,101 @@
   {
     "id": "p1",
     "name": "Medical Oxygen",
-    "code": "O2-B",
-    "unit": "B-Cylinder",
-    "price": 180,
-    "stock": 86,
+    "code": "O2-E",
+    "unit": "E-Cylinder",
+    "price": 850,
+    "stock": 12,
     "category": "Oxygen",
-    "description": "Big-size medical oxygen cylinder"
+    "description": "E-size medical oxygen cylinder"
   },
   {
     "id": "p2",
     "name": "Medical Oxygen",
-    "code": "O2-M",
-    "unit": "M-Cylinder",
-    "price": 160,
-    "stock": 100,
+    "code": "O2-H",
+    "unit": "H-Cylinder",
+    "price": 2400,
+    "stock": 6,
     "category": "Oxygen",
-    "description": "M-size medical oxygen cylinder"
+    "description": "H-size medical oxygen cylinder"
   },
   {
     "id": "p3",
     "name": "Medical Oxygen",
-    "code": "O2-S",
-    "unit": "S-Cylinder",
+    "code": "O2-D",
+    "unit": "D-Cylinder",
+    "price": 450,
+    "stock": 15,
+    "category": "Oxygen",
+    "description": "D-size medical oxygen cylinder"
+  },
+  {
+    "id": "p4",
+    "name": "Nitrous Oxide",
+    "code": "N2O-E",
+    "unit": "E-Cylinder",
+    "price": 1200,
+    "stock": 4,
+    "category": "Nitrous Oxide",
+    "description": "Medical grade nitrous oxide"
+  },
+  {
+    "id": "p5",
+    "name": "Carbon Dioxide",
+    "code": "CO2-E",
+    "unit": "E-Cylinder",
+    "price": 950,
+    "stock": 5,
+    "category": "CO2",
+    "description": "Medical grade carbon dioxide"
+  },
+  {
+    "id": "p6",
+    "name": "Medical Air",
+    "code": "AIR-H",
+    "unit": "H-Cylinder",
+    "price": 1800,
+    "stock": 4,
+    "category": "Medical Air",
+    "description": "Compressed medical air"
+  },
+  {
+    "id": "p7",
+    "name": "Nitrogen",
+    "code": "N2-H",
+    "unit": "H-Cylinder",
+    "price": 1600,
+    "stock": 3,
+    "category": "Nitrogen",
+    "description": "Medical grade nitrogen"
+  },
+  {
+    "id": "p8",
+    "name": "Oxygen Refill",
+    "code": "O2-REFILL-E",
+    "unit": "E-Cylinder Refill",
+    "price": 350,
+    "stock": 20,
+    "category": "Refill",
+    "description": "Oxygen cylinder refill service"
+  },
+  {
+    "id": "p9",
+    "name": "Oxygen Regulator",
+    "code": "REG-O2",
+    "unit": "pcs",
+    "price": 2500,
+    "stock": 8,
+    "category": "Equipment",
+    "description": "Single-stage oxygen regulator"
+  },
+  {
+    "id": "p10",
+    "name": "Oxygen Tubing",
+    "code": "TUBE-O2",
+    "unit": "pcs",
     "price": 120,
-    "stock": 100,
-    "category": "Oxygen",
-    "description": "S-size medical oxygen cylinder"
-  },
-  {
-    "name": "Medical Oxygen",
-    "code": "O2-m",
-    "unit": "pcs",
-    "price": 60,
-    "stock": 96,
-    "category": "Oxygen",
-    "description": "Mini O2 cylinder",
-    "id": "1780271643030-zrwln"
-  },
-  {
-    "name": "Discounted Oxygen",
-    "code": "O2 MEDIUM",
-    "unit": "pcs",
-    "price": 150,
-    "stock": 782,
-    "category": "Oxygen",
-    "description": "",
-    "id": "1780273025273-yf2yf"
+    "stock": 30,
+    "category": "Consumables",
+    "description": "3m oxygen delivery tubing"
   }
 ]
