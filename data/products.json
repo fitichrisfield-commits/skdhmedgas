@@ -4,7 +4,7 @@
     "name": "Medical Oxygen",
     "code": "O2-E",
     "unit": "E-Cylinder",
-    "price": 850,
+    "price": 150,
     "stock": 12,
     "category": "Oxygen",
     "description": "E-size medical oxygen cylinder"
