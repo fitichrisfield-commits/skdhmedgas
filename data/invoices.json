@@ -673,5 +673,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1791638662530-6rj7v",
+    "invoiceNo": "OXY-2026-00029",
+    "date": "2026-10-10T13:24:22.532Z",
+    "dueDate": "2026-10-10T13:24:22.532Z",
+    "customerName": "Jamasi Polyclinic ",
+    "customerAddress": "Sekyere South District, Ashanti Region",
+    "customerPhone": "054 747 4206",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-E",
+        "unit": "E-Cylinder",
+        "qty": 5,
+        "price": 160
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 800,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
