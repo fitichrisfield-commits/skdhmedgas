@@ -698,5 +698,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1791880074629-kkk5i",
+    "invoiceNo": "OXY-2026-00030",
+    "date": "2026-10-13T08:27:54.629Z",
+    "dueDate": "2026-10-13T08:27:54.629Z",
+    "customerName": "Effiduase Government Hospital",
+    "customerAddress": "Sekyere East District, Ashanti Region",
+    "customerPhone": "024 624 5244",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-E",
+        "unit": "E-Cylinder",
+        "qty": 12,
+        "price": 150
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 1800,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
