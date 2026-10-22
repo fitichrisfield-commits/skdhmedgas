@@ -1,15 +1,5 @@
 [
   {
-    "id": "p1",
-    "name": "Medical Oxygen",
-    "code": "O2-E",
-    "unit": "E-Cylinder",
-    "price": 150,
-    "stock": 1148,
-    "category": "Oxygen",
-    "description": "E-size medical oxygen cylinder"
-  },
-  {
     "id": "p2",
     "name": "Medical Oxygen",
     "code": "O2-H",
