@@ -773,5 +773,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1792775323126-9dwkw",
+    "invoiceNo": "OXY-2026-00033",
+    "date": "2026-10-23T17:08:43.126Z",
+    "dueDate": "2026-10-23T17:08:43.126Z",
+    "customerName": "Khalita Family Hospital ",
+    "customerAddress": "Effiduase Zongo",
+    "customerPhone": "+233 24 383 3489",
+    "items": [
+      {
+        "id": "p1",
+        "name": "Medical Oxygen",
+        "code": "O2-E",
+        "unit": "E-Cylinder",
+        "qty": 3,
+        "price": 150
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 450,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
