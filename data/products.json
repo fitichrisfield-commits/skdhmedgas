@@ -14,10 +14,10 @@
     "name": "Medical Oxygen",
     "code": "O2-H",
     "unit": "H-Cylinder",
-    "price": 2400,
-    "stock": 6,
+    "price": 50,
+    "stock": 600,
     "category": "Oxygen",
-    "description": "H-size medical oxygen cylinder"
+    "description": "Mobile Oxygen"
   },
   {
     "id": "p3",
