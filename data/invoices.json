@@ -848,5 +848,30 @@
     "paymentMethod": "Cash",
     "notes": "3rd Nov,2026",
     "status": "unpaid"
+  },
+  {
+    "id": "1794040559531-tk0nk",
+    "invoiceNo": "OXY-2026-00036",
+    "date": "2026-11-07T08:35:59.533Z",
+    "dueDate": "2026-11-07T08:35:59.533Z",
+    "customerName": "Drobonso District Hospital",
+    "customerAddress": "Drobonso",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p2",
+        "name": "Medical Oxygen",
+        "code": "O2-H",
+        "unit": "H-Cylinder",
+        "qty": 9,
+        "price": 50
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 450,
+    "balance": 0,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "paid"
   }
 ]
