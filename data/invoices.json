@@ -898,5 +898,30 @@
     "paymentMethod": "Cash",
     "notes": "",
     "status": "unpaid"
+  },
+  {
+    "id": "1795615679097-bwmh5",
+    "invoiceNo": "OXY-2026-00038",
+    "date": "2026-11-25T14:07:59.097Z",
+    "dueDate": "2026-11-25T14:07:59.097Z",
+    "customerName": "",
+    "customerAddress": "",
+    "customerPhone": "",
+    "items": [
+      {
+        "id": "p3",
+        "name": "Medical Oxygen",
+        "code": "O2-D",
+        "unit": "D-Cylinder",
+        "qty": 1,
+        "price": 450
+      }
+    ],
+    "discount": 0,
+    "amountPaid": 0,
+    "balance": 450,
+    "paymentMethod": "Cash",
+    "notes": "",
+    "status": "unpaid"
   }
 ]
